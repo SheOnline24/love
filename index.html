@@ -1,30 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Redirect</title>
-  <script>
-    // Список партнёрских ссылок
-    const links = [
-      "https://tone.affomelody.com/click?pid=6350&offer_id=25",
-      "https://rdlwl.llovellydates.com/?utm_source=da57dc555e50572d&ban=tg&j1=1&s1=44438&s2=2224799"
-    ];
-
-    // Получаем индекс последней перехода из localStorage
-    let index = localStorage.getItem('lastPartner') || 0;
-
-    // Берём ссылку для текущего перехода
-    const nextLink = links[index];
-
-    // Обновляем индекс для следующего перехода
-    index = (parseInt(index) + 1) % links.length;
-    localStorage.setItem('lastPartner', index);
-
-    // Перенаправление
-    window.location.href = nextLink;
-  </script>
+<meta charset="UTF-8">
+<title>Loading...</title>
+<meta name="referrer" content="no-referrer">
 </head>
 <body>
-  <p>Перенаправление…</p>
+
+<script>
+// --- антибот
+const ua = navigator.userAgent.toLowerCase();
+
+const isBot =
+  ua.includes("bot") ||
+  ua.includes("crawler") ||
+  ua.includes("spider") ||
+  ua.includes("preview") ||
+  ua.includes("facebookexternalhit") ||
+  ua.includes("telegrambot");
+
+// --- офферы
+const offers = [
+  { url: "https://tone.affomelody.com/click?pid=6350&offer_id=25", baseWeight: 0.4, key: "offer1" },
+  { url: "https://rdlwl.llovellydates.com/?utm_source=da57dc555e50572d&ban=tg&j1=1&s1=44438&s2=2224799", baseWeight: 0.4, key: "offer2" },
+  { url: "https://onlinepnpbit.com/2Vi4txHl/", baseWeight: 0.2, key: "offer3" }
+];
+
+// --- получаем статистику
+function getStats() {
+  let stats = localStorage.getItem("stats");
+  return stats ? JSON.parse(stats) : {};
+}
+
+// --- сохраняем статистику
+function saveStats(stats) {
+  localStorage.setItem("stats", JSON.stringify(stats));
+}
+
+// --- обновляем клики (обучение)
+function trackClick(key) {
+  let stats = getStats();
+  stats[key] = (stats[key] || 0) + 1;
+  saveStats(stats);
+}
+
+// --- выбираем оффер (гибрид)
+function chooseOffer() {
+  let saved = localStorage.getItem("offer_link");
+  if (saved) return saved;
+
+  let stats = getStats();
+
+  // если мало данных → базовое распределение
+  let totalClicks = Object.values(stats).reduce((a,b) => a+b, 0);
+
+  let weights = [];
+
+  for (let offer of offers) {
+    let bonus = stats[offer.key] ? stats[offer.key] / (totalClicks || 1) : 0;
+    let weight = offer.baseWeight + bonus * 0.5; // усиливаем успешные
+    weights.push(weight);
+  }
+
+  // нормализация
+  let sum = weights.reduce((a,b) => a+b, 0);
+  weights = weights.map(w => w / sum);
+
+  // выбор
+  let rand = Math.random();
+  let cumulative = 0;
+
+  for (let i = 0; i < offers.length; i++) {
+    cumulative += weights[i];
+
+    if (rand < cumulative) {
+      localStorage.setItem("offer_link", offers[i].url);
+      trackClick(offers[i].key);
+      return offers[i].url;
+    }
+  }
+}
+
+// --- редирект
+if (!isBot) {
+  setTimeout(() => {
+    window.location.replace(chooseOffer());
+  }, 800);
+} else {
+  document.body.innerHTML = "Loading...";
+}
+</script>
+
 </body>
 </html>
