@@ -4,56 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Loading...</title>
-
 <style>
-body {
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  background:#0f0f0f;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-}
-
-.container {
-  text-align:center;
-  padding:20px;
-}
-
-.chat {
-  font-size:18px;
-  margin-bottom:25px;
-  min-height:60px;
-}
-
-.btn {
-  padding:14px 22px;
-  border-radius:14px;
-  font-size:16px;
-  border:none;
-  cursor:pointer;
-}
-
-.ios { background:#007aff; }
-.android { background:#2ecc71; }
-
-.popup {
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#1c1c1c;
-  padding:15px;
-  border-radius:12px;
-  display:none;
-}
+body {margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0f0f0f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;}
+.container {text-align:center;padding:20px;}
+.chat {font-size:18px;margin-bottom:25px;min-height:60px;}
+.btn {padding:14px 22px;border-radius:14px;font-size:16px;border:none;cursor:pointer;}
+.ios {background:#007aff;}
+.android {background:#2ecc71;}
+.popup {position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1c1c1c;padding:15px;border-radius:12px;display:none;z-index:999;}
 </style>
 </head>
-
 <body>
-
 <div class="container">
   <div class="chat" id="chat"></div>
   <button class="btn" id="mainBtn"></button>
@@ -70,131 +31,89 @@ const TG = "https://t.me/+NFHjJC5nOndlZjky";
 const DATING = "https://tone.affomelody.com/click?pid=6350&offer_id=25";
 const CASINO = "https://onlinepnpbit.com/2Vi4txHl/";
 
-// --- состояние
+// --- состояния
 let redirected = false;
-let returned = localStorage.getItem("tg_clicked");
+let tgClicked = localStorage.getItem("tg_clicked");
 
 // --- язык
 let lang = (navigator.language || "en").slice(0,2);
-if (!["en","ru","de","fr"].includes(lang)) lang = "en";
+if(!["en","ru","de","fr"].includes(lang)) lang="en";
 
 // --- тексты
 const texts = {
-  en:{
-    chat:["She is online...","Waiting for your message 💬"],
-    btn:"Join Telegram",
-    returnText:"No Stars? Try free 👇",
-    returnBtn:"Continue"
-  },
-  ru:{
-    chat:["Она онлайн...","Ждёт твоё сообщение 💬"],
-    btn:"Перейти в Telegram",
-    returnText:"Нет Stars? Попробуй бесплатно 👇",
-    returnBtn:"Продолжить"
-  },
-  de:{
-    chat:["Sie ist online...","Wartet auf dich 💬"],
-    btn:"Telegram öffnen",
-    returnText:"Keine Stars? Kostenlos testen 👇",
-    returnBtn:"Weiter"
-  },
-  fr:{
-    chat:["Elle est en ligne...","Elle t'attend 💬"],
-    btn:"Ouvrir Telegram",
-    returnText:"Pas de Stars? Essaye gratuit 👇",
-    returnBtn:"Continuer"
-  }
+  en:{chat:["She is online...","Waiting for your message 💬"],btn:"Join Telegram",returnText:"No Stars? Try free 👇",returnBtn:"Continue"},
+  ru:{chat:["Она онлайн...","Ждёт твоё сообщение 💬"],btn:"Перейти в Telegram",returnText:"Нет Stars? Попробуй бесплатно 👇",returnBtn:"Продолжить"},
+  de:{chat:["Sie ist online...","Wartet auf dich 💬"],btn:"Telegram öffnen",returnText:"Keine Stars? Kostenlos testen 👇",returnBtn:"Weiter"},
+  fr:{chat:["Elle est en ligne...","Elle t'attend 💬"],btn:"Ouvrir Telegram",returnText:"Pas de Stars? Essaye gratuit 👇",returnBtn:"Continuer"}
 };
 
 // --- элементы
-const chat = document.getElementById("chat");
-const btn = document.getElementById("mainBtn");
+const chat=document.getElementById("chat");
+const btn=document.getElementById("mainBtn");
+const popup=document.getElementById("popup");
 
 // --- стиль кнопки
-const isIOS = /iphone|ipad/i.test(navigator.userAgent);
-btn.classList.add(isIOS ? "ios" : "android");
+const isIOS=/iphone|ipad/i.test(navigator.userAgent);
+btn.classList.add(isIOS?"ios":"android");
 
-// --- ЕСЛИ ВЕРНУЛСЯ ИЗ TELEGRAM
-if(returned){
+// --- функции
+function getStats(){return JSON.parse(localStorage.getItem("stats")||"{}");}
+function saveStats(s){localStorage.setItem("stats",JSON.stringify(s));}
 
-  chat.innerText = texts[lang].returnText;
-  btn.innerText = texts[lang].returnBtn;
+// --- умный выбор оффера
+function chooseOffer(){
+  let stats=getStats();
+  let d=stats.d||1, c=stats.c||1, total=d+c;
+  let dWeight=0.7+(d/total)*0.5;
+  let cWeight=0.3+(c/total)*0.5;
+  let rand=Math.random();
+  if(rand<dWeight/(dWeight+cWeight)){stats.d=d+1; saveStats(stats); return DATING;}
+  else{stats.c=c+1; saveStats(stats); return CASINO;}
+}
 
-  btn.onclick = () => {
-    window.location.href = DATING;
-  };
+// --- переход на казино
+function goCasino(){window.location.href=CASINO;}
 
-} else {
+// --- основной логический блок
+function setupReturnDojim(){
+  chat.innerText=texts[lang].returnText;
+  btn.innerText=texts[lang].returnBtn;
+  btn.onclick=()=>{window.location.href=DATING;};
 
-  // --- обычный прогрев
+  // --- через 3–5 секунд показать казино popup
+  setTimeout(()=>{popup.style.display="block";},3000+Math.random()*2000);
+}
+
+// --- если пользователь уже был в Telegram
+if(tgClicked){setupReturnDojim();}
+else{
+  // прогрев чат
   let i=0;
-  function typeChat(){
-    if(i<texts[lang].chat.length){
-      chat.innerText = texts[lang].chat[i];
-      i++;
-      setTimeout(typeChat,1500);
-    }
-  }
+  function typeChat(){if(i<texts[lang].chat.length){chat.innerText=texts[lang].chat[i];i++;setTimeout(typeChat,1500);}}
   typeChat();
 
-  btn.innerText = texts[lang].btn;
-
-  btn.onclick = () => {
-    redirected = true;
+  btn.innerText=texts[lang].btn;
+  btn.onclick=()=>{
+    redirected=true;
     localStorage.setItem("tg_clicked","1");
-    window.location.href = TG;
+    window.location.href=TG;
   };
 
-  // --- редирект если не нажал
+  // редирект если не нажал кнопку
   setTimeout(()=>{
-    if(!redirected){
-      window.location.replace(chooseOffer());
-    }
-  }, 6000 + Math.random()*3000);
+    if(!redirected) window.location.replace(chooseOffer());
+  },6000+Math.random()*3000);
 }
 
-// --- статистика
-function getStats(){
-  return JSON.parse(localStorage.getItem("stats")||"{}");
-}
-function saveStats(s){
-  localStorage.setItem("stats",JSON.stringify(s));
-}
-
-// --- умный выбор
-function chooseOffer(){
-  let stats = getStats();
-  let d = stats.d || 1;
-  let c = stats.c || 1;
-
-  let total = d + c;
-
-  let dWeight = 0.7 + (d/total)*0.5;
-  let cWeight = 0.3 + (c/total)*0.5;
-
-  let rand = Math.random();
-
-  if(rand < dWeight/(dWeight+cWeight)){
-    stats.d = d+1;
-    saveStats(stats);
-    return DATING;
-  } else {
-    stats.c = c+1;
-    saveStats(stats);
-    return CASINO;
+// --- ловим возврат через back/Telegram
+window.addEventListener("pageshow", function(event){
+  if((event.persisted || performance.getEntriesByType("navigation")[0].type==="back_forward") && localStorage.getItem("tg_clicked")){
+    setupReturnDojim();
   }
-}
-
-// --- popup при выходе
-window.addEventListener("popstate", function(){
-  document.getElementById("popup").style.display="block";
 });
 
-// --- казино
-function goCasino(){
-  window.location.href = CASINO;
-}
+// --- popup при попытке уйти
+window.addEventListener("popstate",()=>{popup.style.display="block";});
 </script>
-
 </body>
 </html>
