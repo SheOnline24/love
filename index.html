@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Smart Redirect + Casino & Telegram + Fallback</title>
+<title>Smart Redirect + Full Multi-Language</title>
 <meta name="referrer" content="no-referrer">
 </head>
 <body>
@@ -40,13 +40,6 @@ function trackClick(key) {
   saveStats(stats);
 }
 
-// --- усиление
-function trackConversion(key) {
-  let stats = getStats();
-  stats[key] = (stats[key] || 0) + 5;
-  saveStats(stats);
-}
-
 // --- выбор оффера
 function chooseOffer() {
   let stats = getStats();
@@ -72,6 +65,40 @@ function chooseOffer() {
   }
 }
 
+// --- мультиязычные тексты
+const texts = {
+  "casino": {
+    "ru": "🎰 Вращаем колёсико бонуса... Подождите 3 сек",
+    "en": "🎰 Spinning bonus wheel... Please wait 3 sec",
+    "es": "🎰 Girando rueda de bonificación... Espere 3 segundos",
+    "fr": "🎰 Roue bonus en cours... Veuillez patienter 3 sec"
+  },
+  "tg": {
+    "ru": "⭐ Доступ к приватному каналу",
+    "en": "⭐ Access to private channel",
+    "es": "⭐ Acceso al canal privado",
+    "fr": "⭐ Accès au canal privé"
+  },
+  "tgButton": {
+    "ru": "Войти",
+    "en": "Enter",
+    "es": "Entrar",
+    "fr": "Entrer"
+  },
+  "dating": {
+    "ru": "❤️ Переход на рейтинг дейтинга...",
+    "en": "❤️ Redirecting to dating rating...",
+    "es": "❤️ Redirigiendo a la clasificación de citas...",
+    "fr": "❤️ Redirection vers le classement dating..."
+  }
+};
+
+// --- функция получения текста по языку
+function getText(key) {
+  const lang = (navigator.language || navigator.userLanguage || "en").slice(0,2);
+  return (texts[key] && texts[key][lang]) || texts[key]["en"];
+}
+
 // --- запуск
 if (!isBot) {
   let selected = chooseOffer();
@@ -80,7 +107,7 @@ if (!isBot) {
   if (selected.prog) {
     // --- казино прогрев
     const landing = document.createElement("div");
-    landing.innerHTML = `<p>🎰 Вращаем колёсико бонуса... Подождите 3 сек</p>`;
+    landing.innerHTML = `<p>${getText("casino")}</p>`;
     document.body.innerHTML = "";
     document.body.appendChild(landing);
 
@@ -91,9 +118,8 @@ if (!isBot) {
     // --- Telegram с fallback
     const landing = document.createElement("div");
     landing.innerHTML = `
-      <p>⭐ Доступ к приватному каналу</p>
-      <p>Нажмите "Войти", чтобы перейти</p>
-      <button id="enterTG">Войти</button>
+      <p>${getText("tg")}</p>
+      <button id="enterTG">${getText("tgButton")}</button>
     `;
     document.body.innerHTML = "";
     document.body.appendChild(landing);
@@ -111,7 +137,12 @@ if (!isBot) {
       }
     }, 5000);
   } else {
-    // --- обычный редирект для дейтинг
+    // --- редирект дейтинг
+    const landing = document.createElement("div");
+    landing.innerHTML = `<p>${getText("dating")}</p>`;
+    document.body.innerHTML = "";
+    document.body.appendChild(landing);
+
     setTimeout(() => {
       window.location.replace(selected.url);
     }, 500);
