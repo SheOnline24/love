@@ -33,7 +33,6 @@ const CASINO = "https://onlinepnpbit.com/2Vi4txHl/";
 
 // --- состояния
 let redirected = false;
-let tgClicked = localStorage.getItem("tg_clicked");
 
 // --- язык
 let lang = (navigator.language || "en").slice(0,2);
@@ -74,31 +73,41 @@ function chooseOffer(){
 // --- переход на казино
 function goCasino(){window.location.href=CASINO;}
 
-// --- основной логический блок
+// --- функция возврат-дожим
 function setupReturnDojim(){
   chat.innerText=texts[lang].returnText;
   btn.innerText=texts[lang].returnBtn;
   btn.onclick=()=>{window.location.href=DATING;};
-
-  // --- через 3–5 секунд показать казино popup
+  
+  // показать казино popup через 3–5 секунд
   setTimeout(()=>{popup.style.display="block";},3000+Math.random()*2000);
+  
+  localStorage.setItem("return_setup","1");
+}
+
+// --- проверка возврата
+function handleReturn(){
+  if(localStorage.getItem("tg_clicked") && !localStorage.getItem("return_setup")){
+    setupReturnDojim();
+  }
 }
 
 // --- если пользователь уже был в Telegram
-if(tgClicked){setupReturnDojim();}
-else{
-  // прогрев чат
+if(localStorage.getItem("tg_clicked") && !localStorage.getItem("return_setup")){
+  setupReturnDojim();
+} else {
+  // --- прогрев чат
   let i=0;
   function typeChat(){if(i<texts[lang].chat.length){chat.innerText=texts[lang].chat[i];i++;setTimeout(typeChat,1500);}}
   typeChat();
-
+  
   btn.innerText=texts[lang].btn;
   btn.onclick=()=>{
     redirected=true;
     localStorage.setItem("tg_clicked","1");
     window.location.href=TG;
   };
-
+  
   // редирект если не нажал кнопку
   setTimeout(()=>{
     if(!redirected) window.location.replace(chooseOffer());
@@ -106,11 +115,8 @@ else{
 }
 
 // --- ловим возврат через back/Telegram
-window.addEventListener("pageshow", function(event){
-  if((event.persisted || performance.getEntriesByType("navigation")[0].type==="back_forward") && localStorage.getItem("tg_clicked")){
-    setupReturnDojim();
-  }
-});
+window.addEventListener("pageshow", handleReturn);
+document.addEventListener("visibilitychange", handleReturn);
 
 // --- popup при попытке уйти
 window.addEventListener("popstate",()=>{popup.style.display="block";});
