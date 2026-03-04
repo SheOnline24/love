@@ -2,153 +2,159 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Loading...</title>
+
 <style>
-body {margin:0;font-family:-apple-system,BlinkMacSystemFont,Arial;background:#0f172a;color:white;text-align:center;}
-.box {padding:20px;}
-.msg {background:#1e293b;margin:10px;padding:12px;border-radius:12px;text-align:left;animation:fade 0.4s ease;}
-@keyframes fade {from{opacity:0; transform:translateY(10px);} to{opacity:1;}}
-.button {
-  position: fixed;
-  top: 35%;           /* чуть выше середины экрана */
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 420px;
-  padding: 16px;
-  font-size: 17px;
-  font-weight: 600;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 999;
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#0f0f0f;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  overflow:hidden;
 }
-.button.ios {background:#007aff;border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,0.25);}
-.button.ios:active {transform:translate(-50%, -50%) scale(0.96);}
-.button.android {background:#0088cc;border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,0.3);}
-.button.android:active {transform:translate(-50%, -50%) scale(0.97);}
-.exit-popup {position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.95);display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:1000;display:none;}
-.exit-popup p {color:white;font-size:18px;margin:10px;text-align:center;}
-.exit-popup button {margin-top:20px;padding:14px 24px;font-size:16px;border:none;border-radius:12px;cursor:pointer;}
+
+.container {
+  text-align:center;
+  padding:20px;
+}
+
+.chat {
+  font-size:18px;
+  margin-bottom:30px;
+  min-height:60px;
+}
+
+.btn {
+  padding:14px 22px;
+  border-radius:14px;
+  font-size:16px;
+  border:none;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.ios { background:#007aff; }
+.android { background:#2ecc71; }
+
+.popup {
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#1c1c1c;
+  padding:15px;
+  border-radius:12px;
+  display:none;
+}
 </style>
 </head>
-<body>
-<div class="box" id="chat"></div>
 
-<!-- Exit Popup -->
-<div class="exit-popup" id="exitPopup">
-  <p id="exitText">💥 Wait! Don't leave yet!</p>
-  <button id="exitBtn">Try Casino / Channel</button>
+<body>
+
+<div class="container">
+  <div class="chat" id="chat"></div>
+  <button class="btn" id="tgBtn">Join Telegram</button>
+</div>
+
+<div class="popup" id="popup">
+  🎁 Bonus available!  
+  <br><br>
+  <button onclick="goCasino()">Get Bonus</button>
 </div>
 
 <script>
+// --- ссылки
+const TG = "https://t.me/+NFHjJC5nOndlZjky";
+const DATING = "https://tone.affomelody.com/click?pid=6350&offer_id=25";
+const CASINO = "https://onlinepnpbit.com/2Vi4txHl/";
+
 // --- язык
-const lang=(navigator.language||"en").toLowerCase();
-let langKey="en";
-if(lang.startsWith("ru")) langKey="ru";
-else if(lang.startsWith("fr")) langKey="fr";
-else if(lang.startsWith("de")) langKey="de";
-
-// --- источник
-const ua=navigator.userAgent.toLowerCase();
-let source="default";
-if(ua.includes("telegram")) source="telegram";
-else if(ua.includes("tiktok")) source="tiktok";
-else if(ua.includes("facebook")||ua.includes("fb")) source="facebook";
-
-// --- офферы
-const offers=[
-  {url:"https://tone.affomelody.com/click?pid=6350&offer_id=25", key:"dating", baseWeight:0.4},
-  {url:"https://onlinepnpbit.com/2Vi4txHl/", key:"casino", baseWeight:0.3},
-  {url:"https://t.me/+NFHjJC5nOndlZjky", key:"telegram_channel", baseWeight:0.3}
-];
-
-// --- статистика
-function getStats(){return JSON.parse(localStorage.getItem("offerStats")||"{}");}
-function saveStats(stats){localStorage.setItem("offerStats",JSON.stringify(stats));}
-function trackClick(key){let s=getStats(); s[key]=(s[key]||0)+1; saveStats(s);}
-
-// --- выбираем оффер по весам + статистике
-function chooseOffer(){
-  let stats=getStats();
-  let totalClicks=Object.values(stats).reduce((a,b)=>a+b,0);
-  let weights=offers.map(o=>{
-    let bonus=stats[o.key]?stats[o.key]/(totalClicks||1):0;
-    return o.baseWeight + bonus*0.5; 
-  });
-  let sum=weights.reduce((a,b)=>a+b,0);
-  weights=weights.map(w=>w/sum);
-  let rand=Math.random(), cumulative=0;
-  for(let i=0;i<offers.length;i++){
-    cumulative+=weights[i];
-    if(rand<cumulative){trackClick(offers[i].key); return offers[i].url;}
-  }
-  return offers[0].url;
-}
+let lang = (navigator.language || "en").slice(0,2);
+if (!["en","ru","de","fr"].includes(lang)) lang = "en";
 
 // --- тексты
-const texts={
-  ru:{telegram:["📲 Вы перешли из Telegram","🔥 Доступ к закрытому контенту","💬 Вход открывает всё","⚡ Успей зайти"], tiktok:["🎥 Это сейчас в тренде","🔥 Ссылка доступна ограничено","💬 Полный доступ внутри","⚡ Жми пока есть"], facebook:["📘 Вы пришли из Facebook","🔥 Ограниченное предложение","💬 Доступ открыт","⚡ Успей воспользоваться"], default:["🔥 Доступ ограничен","💬 Осталось мало мест","🎰 Бонус после входа","⚡ Жми сейчас"], btn:"ПОЛУЧИТЬ ДОСТУП", exit:"💥 Подождите! Не уходите!"},
-  en:{telegram:["📲 You came from Telegram","🔥 Private access available","💬 Content unlocks after entry","⚡ Don’t miss it"], tiktok:["🎥 Trending right now","🔥 Link available for limited time","💬 Full access inside","⚡ Tap before it's gone"], facebook:["📘 You came from Facebook","🔥 Limited offer","💬 Access is open","⚡ Join now"], default:["🔥 Limited access","💬 Few spots left","🎰 Bonus after entry","⚡ Join now"], btn:"GET ACCESS", exit:"💥 Wait! Don't leave yet!"},
-  fr:{telegram:["📲 Vous venez de Telegram","🔥 Accès privé disponible","💬 Contenu débloqué après l'entrée","⚡ Ne manquez pas"], tiktok:["🎥 En tendance maintenant","🔥 Lien disponible pour un temps limité","💬 Accès complet à l'intérieur","⚡ Cliquez avant qu'il ne disparaisse"], facebook:["📘 Vous venez de Facebook","🔥 Offre limitée","💬 Accès ouvert","⚡ Rejoignez maintenant"], default:["🔥 Accès limité","💬 Peu de places restantes","🎰 Bonus après l'entrée","⚡ Cliquez maintenant"], btn:"OBTENIR L'ACCÈS", exit:"💥 Ne partez pas encore!"},
-  de:{telegram:["📲 Du kommst von Telegram","🔥 Privater Zugang verfügbar","💬 Inhalt nach Eintritt freigeschaltet","⚡ Nicht verpassen"], tiktok:["🎥 Jetzt im Trend","🔥 Link für begrenzte Zeit verfügbar","💬 Voller Zugriff innen","⚡ Tippen bevor es weg ist"], facebook:["📘 Du kommst von Facebook","🔥 Begrenztes Angebot","💬 Zugriff ist geöffnet","⚡ Jetzt beitreten"], default:["🔥 Begrenzter Zugang","💬 Wenige Plätze verfügbar","🎰 Bonus nach Eintritt","⚡ Jetzt klicken"], btn:"ZUGANG ERHALTEN", exit:"💥 Nicht gehen!"}
+const texts = {
+  en:["She is online...","Waiting for your message 💬"],
+  ru:["Она онлайн...","Ждёт твоё сообщение 💬"],
+  de:["Sie ist online...","Wartet auf dich 💬"],
+  fr:["Elle est en ligne...","Elle t'attend 💬"]
 };
-let t=texts[langKey];
-let messages=t[source]||t.default;
 
-// --- гео
-fetch('https://ipapi.co/json/').then(res=>res.json()).then(data=>{
-  if(data && data.country_name){
-    const geoMsg={ru:`🌍 Уже присоединились пользователи из ${data.country_name}!`, en:`🌍 Users from ${data.country_name} joined today!`, fr:`🌍 Des utilisateurs de ${data.country_name} ont rejoint aujourd'hui!`, de:`🌍 Benutzer aus ${data.country_name} haben heute teilgenommen!`};
-    messages.push(geoMsg[langKey]||geoMsg.en);
-    showMsg();
-  }
-}).catch(()=>{showMsg();});
-
-// --- вывод чата
+// --- чат
 let i=0;
-function showMsg(){
-  if(i<messages.length){
-    const div=document.createElement("div");
-    div.className="msg";
-    div.innerText=messages[i];
-    document.getElementById("chat").appendChild(div);
+function typeChat(){
+  if(i<texts[lang].length){
+    document.getElementById("chat").innerText = texts[lang][i];
     i++;
-    setTimeout(showMsg,700);
+    setTimeout(typeChat,1500);
   }
 }
-showMsg();
+typeChat();
 
-// --- устройство
-let deviceClass="android";
-if(/iphone|ipad|ipod/.test(ua)) deviceClass="ios";
+// --- кнопка стиль
+const isIOS = /iphone|ipad/i.test(navigator.userAgent);
+const btn = document.getElementById("tgBtn");
+btn.classList.add(isIOS ? "ios" : "android");
 
-// --- кнопка по центру чуть выше
-let btn=document.createElement("button");
-btn.className="button "+deviceClass;
-btn.innerText=t.btn;
-btn.onclick=()=>{ window.location.href=chooseOffer(); };
-document.body.appendChild(btn);
+// --- клик → Telegram
+btn.onclick = () => {
+  localStorage.setItem("clicked","1");
+  window.location.href = TG;
+};
 
-// --- авто редирект через 6 секунд
-setTimeout(()=>{ window.location.href=chooseOffer(); },6000);
+// --- статистика
+function getStats(){
+  return JSON.parse(localStorage.getItem("stats")||"{}");
+}
+function saveStats(s){
+  localStorage.setItem("stats",JSON.stringify(s));
+}
 
-// --- Exit Intent динамический
-let exitPopup=document.getElementById("exitPopup");
-let exitText=document.getElementById("exitText");
-let exitBtn=document.getElementById("exitBtn");
-exitText.innerText = t.exit;
-exitBtn.innerText = t.btn;
-exitBtn.onclick=()=>{ window.location.href=chooseOffer(); } // динамический выбор оффера
+// --- выбор оффера
+function chooseOffer(){
+  let stats = getStats();
+  let d = stats.d || 1;
+  let c = stats.c || 1;
 
-let triggered=false;
-document.addEventListener('mouseout', e=>{
-  if(e.clientY<5 && !triggered){ exitPopup.style.display="flex"; triggered=true; }
+  let total = d + c;
+
+  let dWeight = 0.7 + (d/total)*0.5;
+  let cWeight = 0.3 + (c/total)*0.5;
+
+  let rand = Math.random();
+  if(rand < dWeight/(dWeight+cWeight)){
+    stats.d = d+1;
+    saveStats(stats);
+    return DATING;
+  } else {
+    stats.c = c+1;
+    saveStats(stats);
+    return CASINO;
+  }
+}
+
+// --- редирект если не нажал
+setTimeout(()=>{
+  if(!localStorage.getItem("clicked")){
+    window.location.replace(chooseOffer());
+  }
+}, 6000 + Math.random()*3000);
+
+// --- exit popup
+window.addEventListener("popstate", function(){
+  document.getElementById("popup").style.display="block";
 });
 
-// --- мобильный Back
-window.addEventListener("pagehide", e=>{ if(!triggered){ triggered=true; window.location.href=chooseOffer(); } });
+// --- казино кнопка
+function goCasino(){
+  window.location.href = CASINO;
+}
 </script>
+
 </body>
 </html>
