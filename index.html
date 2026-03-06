@@ -55,7 +55,7 @@ margin-top:10px;
 
 <body>
 
-<h1 id="titleText">She is online...</h1>
+<h1>She is online...</h1>
 
 <div class="online" id="onlineUsers"></div>
 
@@ -73,7 +73,6 @@ margin-top:10px;
 
 </div>
 
-
 <div id="casinoPopup">
 
 <h2>🎁 Bonus available!</h2>
@@ -84,19 +83,28 @@ Get Bonus
 
 </div>
 
-
 <script>
 
-
 // ===== ТВОИ ОФФЕРЫ =====
-
 const DATING="https://tone.affomelody.com/click?pid=6350&offer_id=25";
 const CASINO="https://onlinepnpbit.com/2Vi4txHl/";
 
+// ===== ПЕРЕЗАГРУЗКА ПРИ ВОЗВРАТЕ =====
+window.addEventListener("pageshow",function(e){
+if(e.persisted){
+location.reload();
+}
+});
 
+// ===== ОТСЛЕЖИВАНИЕ ВОЗВРАТА =====
+window.addEventListener("focus",function(){
+if(localStorage.getItem("dating_click")){
+localStorage.removeItem("dating_click");
+showCasino();
+}
+});
 
 // ===== ЯЗЫКИ =====
-
 const locales={
 
 en:{
@@ -138,7 +146,7 @@ online:"utilisateurs en ligne"
 es:{
 typing:"Ella está escribiendo...",
 m1:"Hola...",
-m2:"Estás solo?",
+m2:"¿Estás solo?",
 m3:"Hablemos en privado...",
 btn:"Continuar chat",
 online:"usuarios en línea"
@@ -151,44 +159,94 @@ m2:"Sei solo?",
 m3:"Parliamo in privato...",
 btn:"Continua chat",
 online:"utenti online"
+},
+
+nl:{
+typing:"Ze is aan het typen...",
+m1:"Hey...",
+m2:"Ben je alleen?",
+m3:"Laten we privé chatten...",
+btn:"Chat doorgaan",
+online:"gebruikers online"
+},
+
+pl:{
+typing:"Ona pisze...",
+m1:"Hej...",
+m2:"Jesteś sam?",
+m3:"Porozmawiajmy prywatnie...",
+btn:"Kontynuuj czat",
+online:"użytkowników online"
+},
+
+pt:{
+typing:"Ela está digitando...",
+m1:"Oi...",
+m2:"Você está sozinho?",
+m3:"Vamos conversar em privado...",
+btn:"Continuar chat",
+online:"usuários online"
+},
+
+tr:{
+typing:"Yazıyor...",
+m1:"Hey...",
+m2:"Yalnız mısın?",
+m3:"Özel sohbet edelim...",
+btn:"Sohbete devam et",
+online:"çevrimiçi kullanıcı"
+},
+
+sv:{
+typing:"Hon skriver...",
+m1:"Hej...",
+m2:"Är du ensam?",
+m3:"Låt oss chatta privat...",
+btn:"Fortsätt chatten",
+online:"användare online"
+},
+
+no:{
+typing:"Hun skriver...",
+m1:"Hei...",
+m2:"Er du alene?",
+m3:"La oss chatte privat...",
+btn:"Fortsett chat",
+online:"brukere online"
+},
+
+da:{
+typing:"Hun skriver...",
+m1:"Hej...",
+m2:"Er du alene?",
+m3:"Lad os chatte privat...",
+btn:"Fortsæt chat",
+online:"brugere online"
 }
 
 };
 
-
 const lang=navigator.language.split("-")[0];
 const text=locales[lang]||locales.en;
 
-
-
-// ===== ONLINE COUNTER =====
-
+// ===== ONLINE USERS =====
 function updateOnline(){
-
 let users=120+Math.floor(Math.random()*60);
-
 document.getElementById("onlineUsers").innerText=
 users+" "+text.online;
-
 }
 
 updateOnline();
 setInterval(updateOnline,5000);
 
-
-
 // ===== TYPING =====
-
 const typing=document.getElementById("typing");
 typing.style.display="block";
 document.getElementById("typingText").innerText=text.typing;
 
-setTimeout(startChat,3000);
-
-
+setTimeout(startChat,2000);
 
 // ===== CHAT =====
-
 function startChat(){
 
 typing.style.display="none";
@@ -198,54 +256,45 @@ chat.style.display="block";
 
 setTimeout(()=>{
 document.getElementById("m1").innerText=text.m1;
-},1000);
+},800);
 
 setTimeout(()=>{
 document.getElementById("m2").innerText=text.m2;
-},3000);
+},2000);
 
 setTimeout(()=>{
 document.getElementById("m3").innerText=text.m3;
-},5000);
+},3500);
 
 }
 
-
-
 document.getElementById("continueBtn").innerText=text.btn;
 
-
-
 // ===== ПЕРЕХОД НА DATING =====
-
 document.getElementById("continueBtn").onclick=function(){
 
+localStorage.setItem("dating_click","1");
 window.location.href=DATING;
 
 };
 
-
-
-// ===== CASINO POPUP =====
+// ===== РАНДОМНЫЙ ПОКАЗ КАЗИНО =====
+let delay=10000+Math.random()*8000;
 
 setTimeout(function(){
+showCasino();
+},delay);
 
+function showCasino(){
 document.getElementById("casinoPopup").style.display="block";
+}
 
-},25000);
-
-
-
+// ===== КАЗИНО КНОПКА =====
 document.getElementById("casinoBtn").onclick=function(){
-
 window.location.href=CASINO;
-
 };
 
-
-
 // ===== TITLE ANIMATION =====
-
 const titles=["Online","● New message 💬","She is typing...","Online"];
 
 let i=0;
@@ -260,9 +309,7 @@ if(i>=titles.length){i=0;}
 
 },2000);
 
-
 </script>
 
 </body>
-
 </html>
