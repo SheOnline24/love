@@ -40,11 +40,23 @@ button{
   color:#00ff9c;
   margin-top:10px;
 }
+
+/* Плавное появление с эффектом "выпрыгивания" */
+@keyframes popup {
+  0% {opacity:0; transform:translateY(-30px);}
+  60% {opacity:1; transform:translateY(10px);}
+  100% {opacity:1; transform:translateY(0);}
+}
+
+#casinoPopup.show{
+  display:block;
+  animation: popup 0.8s ease forwards;
+}
 </style>
 </head>
 <body>
 
-<h1 id="titleText">She is online...</h1>
+<h1 id="titleText">Online</h1> <!-- Статичная шапка -->
 
 <div class="online" id="onlineUsers"></div>
 
@@ -121,7 +133,8 @@ document.getElementById("continueBtn").onclick=function(){
 
 // ===== ПОКАЗ КАЗИНО =====
 function showCasino(){
-  document.getElementById("casinoPopup").style.display="block";
+  const casino=document.getElementById("casinoPopup");
+  casino.classList.add("show");
 }
 
 // ===== РАНДОМНЫЙ ПОКАЗ КАЗИНО ДЛЯ НОВЫХ ПОСЕТИТЕЛЕЙ =====
