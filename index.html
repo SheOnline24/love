@@ -15,6 +15,14 @@ body{
   text-align:center;
   padding:40px;
 }
+#headerImg{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:10px;
+  border:2px solid #ff2e63;
+}
 button{
   padding:14px 25px;
   font-size:18px;
@@ -24,6 +32,7 @@ button{
   border-radius:8px;
   cursor:pointer;
   margin-top:20px;
+  transition: transform 0.2s, box-shadow 0.3s;
 }
 #typing,#chat,#casinoPopup{
   display:none;
@@ -39,25 +48,35 @@ button{
 .online{
   color:#00ff9c;
   margin-top:10px;
+  font-size:18px;
 }
-
-/* Плавное появление с эффектом "выпрыгивания" */
-@keyframes popup {
+/* Плавное появление + подпрыгивание */
+@keyframes popupBounce {
   0% {opacity:0; transform:translateY(-30px);}
-  60% {opacity:1; transform:translateY(10px);}
-  100% {opacity:1; transform:translateY(0);}
+  50% {opacity:1; transform:translateY(15px);}
+  70% {transform:translateY(-5px);}
+  100% {transform:translateY(0);}
 }
-
+/* Усиленное мерцание кнопки с градиентом */
+@keyframes pulseGlow {
+  0% { transform: scale(1); box-shadow: 0 0 10px #ff2e63; background: linear-gradient(45deg, #ff2e63, #ff6090); }
+  25% { transform: scale(1.05); box-shadow: 0 0 20px #ff4a7b; background: linear-gradient(45deg, #ff4a7b, #ff7ba0); }
+  50% { transform: scale(1.1); box-shadow: 0 0 25px #ff6090; background: linear-gradient(45deg, #ff6090, #ff90b0); }
+  75% { transform: scale(1.05); box-shadow: 0 0 20px #ff4a7b; background: linear-gradient(45deg, #ff4a7b, #ff7ba0); }
+  100% { transform: scale(1); box-shadow: 0 0 10px #ff2e63; background: linear-gradient(45deg, #ff2e63, #ff6090); }
+}
 #casinoPopup.show{
   display:block;
-  animation: popup 0.8s ease forwards;
+  animation: popupBounce 0.8s ease forwards;
+}
+#casinoBtn.pulseGlow{
+  animation: pulseGlow 1.2s infinite;
 }
 </style>
 </head>
 <body>
 
-<h1 id="titleText">Online</h1> <!-- Статичная шапка -->
-
+<img id="headerImg" src="" alt="Online Girl">
 <div class="online" id="onlineUsers"></div>
 
 <div id="typing">
@@ -81,21 +100,20 @@ button{
 const DATING="https://tone.affomelody.com/click?pid=6350&offer_id=25";
 const CASINO="https://onlinepnpbit.com/2Vi4txHl/";
 
+// ===== СЛУЧАЙНЫЕ ДЕВУШКИ =====
+const girls=[
+  "https://i.ibb.co/4dVn5rY/girl1.jpg",
+  "https://i.ibb.co/dKg5c5x/girl2.jpg",
+  "https://i.ibb.co/W0hj9F4/girl3.jpg",
+  "https://i.ibb.co/SvJHcD1/girl4.jpg"
+];
+const headerImg=document.getElementById("headerImg");
+headerImg.src=girls[Math.floor(Math.random()*girls.length)];
+
 // ===== ЯЗЫКИ =====
 const locales={
 en:{typing:"She is typing...",m1:"Hey...",m2:"Are you alone?",m3:"Let's chat privately...",btn:"Continue chat",online:"users online"},
-ru:{typing:"Она печатает...",m1:"Привет...",m2:"Ты один?",m3:"Давай пообщаемся...",btn:"Продолжить чат",online:"пользователей онлайн"},
-de:{typing:"Sie tippt...",m1:"Hey...",m2:"Bist du allein?",m3:"Lass uns privat chatten...",btn:"Chat fortsetzen",online:"Benutzer online"},
-fr:{typing:"Elle écrit...",m1:"Salut...",m2:"Tu es seul?",m3:"Parlons en privé...",btn:"Continuer le chat",online:"utilisateurs en ligne"},
-es:{typing:"Ella está escribiendo...",m1:"Hola...",m2:"¿Estás solo?",m3:"Hablemos en privado...",btn:"Continuar chat",online:"usuarios en línea"},
-it:{typing:"Sta scrivendo...",m1:"Ciao...",m2:"Sei solo?",m3:"Parliamo in privato...",btn:"Continua chat",online:"utenti online"},
-nl:{typing:"Ze is aan het typen...",m1:"Hey...",m2:"Ben je alleen?",m3:"Laten we privé chatten...",btn:"Chat doorgaan",online:"gebruikers online"},
-pl:{typing:"Ona pisze...",m1:"Hej...",m2:"Jesteś sam?",m3:"Porozmawiajmy prywatnie...",btn:"Kontynuuj czat",online:"użytkowników online"},
-pt:{typing:"Ela está digitando...",m1:"Oi...",m2:"Você está sozinho?",m3:"Vamos conversar em privado...",btn:"Continuar chat",online:"usuários online"},
-tr:{typing:"Yazıyor...",m1:"Hey...",m2:"Yalnız mısın?",m3:"Özel sohbet edelim...",btn:"Sohbete devam et",online:"çevrimiçi kullanıcı"},
-sv:{typing:"Hon skriver...",m1:"Hej...",m2:"Är du ensam?",m3:"Låt oss chatta privat...",btn:"Fortsätt chatten",online:"användare online"},
-no:{typing:"Hun skriver...",m1:"Hei...",m2:"Er du alene?",m3:"La oss chatte privat...",btn:"Fortsett chat",online:"brukere online"},
-da:{typing:"Hun skriver...",m1:"Hej...",m2:"Er du alene?",m3:"Lad os chatte privat...",btn:"Fortsæt chat",online:"brugere online"}
+ru:{typing:"Она печатает...",m1:"Привет...",m2:"Ты один?",m3:"Давай пообщаемся...",btn:"Продолжить чат",online:"пользователей онлайн"}
 };
 const lang=navigator.language.split("-")[0];
 const text=locales[lang]||locales.en;
@@ -135,9 +153,10 @@ document.getElementById("continueBtn").onclick=function(){
 function showCasino(){
   const casino=document.getElementById("casinoPopup");
   casino.classList.add("show");
+  document.getElementById("casinoBtn").classList.add("pulseGlow");
 }
 
-// ===== РАНДОМНЫЙ ПОКАЗ КАЗИНО ДЛЯ НОВЫХ ПОСЕТИТЕЛЕЙ =====
+// ===== РАНДОМНЫЙ ПОКАЗ КАЗИНО =====
 let delay=8000+Math.random()*6000;
 setTimeout(showCasino,delay);
 
@@ -165,6 +184,7 @@ setInterval(function(){
   i++;
   if(i>=titles.length){i=0;}
 },2000);
+
 </script>
 </body>
 </html>
