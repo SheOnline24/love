@@ -15,13 +15,22 @@ body{
   text-align:center;
   padding:40px;
 }
-#headerImg{
-  width:100px;
-  height:100px;
+#header{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+#header img{
+  width:50px;
+  height:50px;
   border-radius:50%;
   object-fit:cover;
-  margin-bottom:10px;
-  border:2px solid #ff2e63;
+}
+.onlineUsers{
+  font-size:18px;
+  color:#00ff9c;
 }
 button{
   padding:14px 25px;
@@ -32,7 +41,6 @@ button{
   border-radius:8px;
   cursor:pointer;
   margin-top:20px;
-  transition: transform 0.2s, box-shadow 0.3s;
 }
 #typing,#chat,#casinoPopup{
   display:none;
@@ -45,43 +53,16 @@ button{
   margin:10px auto;
   max-width:300px;
 }
-.online{
-  color:#00ff9c;
-  margin-top:10px;
-  font-size:18px;
-}
-/* Плавное появление + подпрыгивание */
-@keyframes popupBounce {
-  0% {opacity:0; transform:translateY(-30px);}
-  50% {opacity:1; transform:translateY(15px);}
-  70% {transform:translateY(-5px);}
-  100% {transform:translateY(0);}
-}
-/* Усиленное мерцание кнопки с градиентом */
-@keyframes pulseGlow {
-  0% { transform: scale(1); box-shadow: 0 0 10px #ff2e63; background: linear-gradient(45deg, #ff2e63, #ff6090); }
-  25% { transform: scale(1.05); box-shadow: 0 0 20px #ff4a7b; background: linear-gradient(45deg, #ff4a7b, #ff7ba0); }
-  50% { transform: scale(1.1); box-shadow: 0 0 25px #ff6090; background: linear-gradient(45deg, #ff6090, #ff90b0); }
-  75% { transform: scale(1.05); box-shadow: 0 0 20px #ff4a7b; background: linear-gradient(45deg, #ff4a7b, #ff7ba0); }
-  100% { transform: scale(1); box-shadow: 0 0 10px #ff2e63; background: linear-gradient(45deg, #ff2e63, #ff6090); }
-}
-#casinoPopup.show{
-  display:block;
-  animation: popupBounce 0.8s ease forwards;
-}
-#casinoBtn.pulseGlow{
-  animation: pulseGlow 1.2s infinite;
-}
 </style>
 </head>
 <body>
 
-<img id="headerImg" src="" alt="Online Girl">
-<div class="online" id="onlineUsers"></div>
-
-<div id="typing">
-  <span id="typingText"></span>
+<div id="header">
+  <img id="girlImg" src="" alt="Girl">
+  <div class="onlineUsers" id="onlineUsers">0 users online</div>
 </div>
+
+<div id="typing"><span id="typingText"></span></div>
 
 <div id="chat">
   <div class="message" id="m1"></div>
@@ -100,20 +81,20 @@ button{
 const DATING="https://tone.affomelody.com/click?pid=6350&offer_id=25";
 const CASINO="https://onlinepnpbit.com/2Vi4txHl/";
 
-// ===== СЛУЧАЙНЫЕ ДЕВУШКИ =====
+// ===== РАНДОМНАЯ ДЕВУШКА =====
 const girls=[
-  "https://i.ibb.co/4dVn5rY/girl1.jpg",
-  "https://i.ibb.co/dKg5c5x/girl2.jpg",
-  "https://i.ibb.co/W0hj9F4/girl3.jpg",
-  "https://i.ibb.co/SvJHcD1/girl4.jpg"
+  "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80",
+  "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=100&q=80",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80",
+  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80"
 ];
-const headerImg=document.getElementById("headerImg");
-headerImg.src=girls[Math.floor(Math.random()*girls.length)];
+document.getElementById("girlImg").src=girls[Math.floor(Math.random()*girls.length)];
 
 // ===== ЯЗЫКИ =====
 const locales={
-en:{typing:"She is typing...",m1:"Hey...",m2:"Are you alone?",m3:"Let's chat privately...",btn:"Continue chat",online:"users online"},
-ru:{typing:"Она печатает...",m1:"Привет...",m2:"Ты один?",m3:"Давай пообщаемся...",btn:"Продолжить чат",online:"пользователей онлайн"}
+  en:{typing:"She is typing...",m1:"Hey...",m2:"Are you alone?",m3:"Let's chat privately...",btn:"Continue chat",online:"users online"},
+  ru:{typing:"Она печатает...",m1:"Привет...",m2:"Ты один?",m3:"Давай пообщаемся...",btn:"Продолжить чат",online:"пользователей онлайн"},
+  de:{typing:"Sie tippt...",m1:"Hey...",m2:"Bist du allein?",m3:"Lass uns privat chatten...",btn:"Chat fortsetzen",online:"Benutzer online"}
 };
 const lang=navigator.language.split("-")[0];
 const text=locales[lang]||locales.en;
@@ -151,12 +132,10 @@ document.getElementById("continueBtn").onclick=function(){
 
 // ===== ПОКАЗ КАЗИНО =====
 function showCasino(){
-  const casino=document.getElementById("casinoPopup");
-  casino.classList.add("show");
-  document.getElementById("casinoBtn").classList.add("pulseGlow");
+  document.getElementById("casinoPopup").style.display="block";
 }
 
-// ===== РАНДОМНЫЙ ПОКАЗ КАЗИНО =====
+// ===== РАНДОМНЫЙ ПОКАЗ КАЗИНО ДЛЯ НОВЫХ ПОСЕТИТЕЛЕЙ =====
 let delay=8000+Math.random()*6000;
 setTimeout(showCasino,delay);
 
@@ -175,16 +154,7 @@ window.addEventListener("pageshow",()=>{ setTimeout(handleReturn,100); });
 document.getElementById("casinoBtn").onclick=function(){
   window.location.href=CASINO;
 };
-
-// ===== TITLE ANIMATION =====
-const titles=["Online","● New message 💬","She is typing...","Online"];
-let i=0;
-setInterval(function(){
-  document.title=titles[i];
-  i++;
-  if(i>=titles.length){i=0;}
-},2000);
-
 </script>
+
 </body>
 </html>
