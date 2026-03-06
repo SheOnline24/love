@@ -60,41 +60,38 @@ const photos=[
 "https://avatars.mds.yandex.net/i?id=11eabdf694458090418f21c78f442ad0_l-5277647-images-thumbs&ref=rim&n=13&w=736&h=920"
 ];
 
-// ===== АВАТАРКА + ОНЛАЙН =====
+// ===== ЭЛЕМЕНТЫ =====
 const headerImg=document.getElementById("headerPhoto").querySelector("img");
 const onlineUsersDiv=document.getElementById("onlineUsers");
+const chatDiv=document.getElementById("chat");
+const typingDiv=document.getElementById("typing");
+const casinoDiv=document.getElementById("casinoPopup");
+
+// ===== АВАТАРКА + ОНЛАЙН =====
 function updateAvatarAndUsers(){
   const nextPhoto=photos[Math.floor(Math.random()*photos.length)];
   headerImg.style.opacity=0;
-  setTimeout(()=>{
-    headerImg.src=nextPhoto;
-    headerImg.style.opacity=1;
-  },300);
+  setTimeout(()=>{headerImg.src=nextPhoto;headerImg.style.opacity=1;},300);
   let users=120+Math.floor(Math.random()*60);
   onlineUsersDiv.innerText=users+" users online";
 }
 updateAvatarAndUsers();
 setInterval(updateAvatarAndUsers,10000);
 
-// ===== ЯЗЫКИ =====
-const locales={
-en:{typing:"She is typing...",m1:"Hey...",m2:"Are you alone?",m3:"Let's chat privately...",btn:"Continue chat",online:"users online"},
-ru:{typing:"Она печатает...",m1:"Привет...",m2:"Ты один?",m3:"Давай пообщаемся...",btn:"Продолжить чат",online:"пользователей онлайн"}
-};
+// ===== ЯЗЫК =====
+const locales={en:{typing:"She is typing...",m1:"Hey...",m2:"Are you alone?",m3:"Let's chat privately...",btn:"Continue chat",online:"users online"},ru:{typing:"Она печатает...",m1:"Привет...",m2:"Ты один?",m3:"Давай пообщаемся...",btn:"Продолжить чат",online:"пользователей онлайн"}};
 const lang=navigator.language.split("-")[0];
 const text=locales[lang]||locales.en;
 
 // ===== TYPING =====
-const typing=document.getElementById("typing");
-typing.style.display="block";
+typingDiv.style.display="block";
 document.getElementById("typingText").innerText=text.typing;
 setTimeout(startChat,2000);
 
 // ===== CHAT =====
 function startChat(){
-  typing.style.display="none";
-  const chat=document.getElementById("chat");
-  chat.style.display="block";
+  typingDiv.style.display="none";
+  chatDiv.style.display="block";
   setTimeout(()=>{document.getElementById("m1").innerText=text.m1;},800);
   setTimeout(()=>{document.getElementById("m2").innerText=text.m2;},2000);
   setTimeout(()=>{document.getElementById("m3").innerText=text.m3;},3500);
@@ -103,37 +100,22 @@ document.getElementById("continueBtn").innerText=text.btn;
 
 // ===== ПЕРЕХОД НА DATING =====
 document.getElementById("continueBtn").onclick=function(){
-  localStorage.setItem("dating_click","1");
   window.location.href=DATING;
 };
 
-// ===== КАЗИНО =====
+// ===== КАЗИНО ПЛАВНО =====
 function showCasino(){
-  const casino=document.getElementById("casinoPopup");
-  casino.classList.remove("show");
-  // заставляем перезапустить анимацию
-  void casino.offsetWidth;
-  casino.classList.add("show");
-  const btn=casino.querySelector("button");
+  casinoDiv.classList.remove("show");
+  void casinoDiv.offsetWidth; // перезапуск анимации
+  casinoDiv.style.display="block";
+  casinoDiv.classList.add("show");
+  const btn=casinoDiv.querySelector("button");
   btn.classList.add("glow");
   setTimeout(()=>{btn.classList.remove("glow");},3000);
 }
 
-// ===== РАНДОМНЫЙ ПОКАЗ КАЗИНО =====
-let delay=8000+Math.random()*6000;
-setTimeout(showCasino,delay);
-
-// ===== КАЗИНО ПРИ ВОЗВРАТЕ С DATING =====
-function handleReturn(){
-  if(localStorage.getItem("dating_click")){
-    localStorage.removeItem("dating_click");
-    document.getElementById("chat").style.display="none";
-    showCasino();
-  }
-}
-window.addEventListener("focus",()=>{ setTimeout(handleReturn,100); });
-document.addEventListener("visibilitychange",()=>{ if(!document.hidden) setTimeout(handleReturn,100); });
-window.addEventListener("pageshow",()=>{ setTimeout(handleReturn,100); });
+// ===== ПОКАЗ КАЗИНО ПРИ ЗАГРУЗКЕ =====
+setTimeout(showCasino,2000); // сразу через 2 сек после загрузки
 
 // ===== КНОПКА КАЗИНО =====
 document.getElementById("casinoBtn").onclick=function(){
