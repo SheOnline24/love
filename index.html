@@ -1,35 +1,67 @@
 <!DOCTYPE html><html>
-<head>
-<meta charset="UTF-8">
-<title>Redirect</title><script>
+<head><meta charset="UTF-8"><meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0"><title>Loading...</title><script>
 
-const DATING = "https://tone.affomelody.com/click?pid=6350&offer_id=25";
-const CASINO = "https://onlinepnpbit.com/2Vi4txHl/";
+var offers = [
+"https://tone.affomelody.com/click?pid=6350&offer_id=25",
+"https://onlinepnpbit.com/2Vi4txHl/"
+];
 
-if(!sessionStorage.getItem("visited")){
-sessionStorage.setItem("visited","dating");
-location.replace(DATING);
+// стартовые веса
+var weights = JSON.parse(localStorage.getItem("weights")) || [50,50];
+
+function chooseOffer(){
+
+var sum = weights[0] + weights[1];
+var r = Math.random()*sum;
+
+if(r < weights[0]) return 0;
+return 1;
+
 }
 
-window.onpageshow=function(){
-history.pushState(null,null,location.href);
-};
+function updateLearning(id){
 
-window.onpopstate=function(){
+// если пользователь вернулся назад
+// уменьшаем вес оффера
 
-let step=sessionStorage.getItem("visited");
+weights[id] = Math.max(10, weights[id]-5);
 
-if(step==="dating"){
-sessionStorage.setItem("visited","casino");
-location.replace(CASINO);
-}else{
-sessionStorage.setItem("visited","dating");
-location.replace(DATING);
+// увеличиваем второй
+var other = id === 0 ? 1 : 0;
+weights[other] += 5;
+
+localStorage.setItem("weights", JSON.stringify(weights));
+
 }
 
-};
+function redirect(){
 
-</script></head><body>
-Redirecting...
+var id = chooseOffer();
+
+localStorage.setItem("last_offer", id);
+
+var url = offers[id] + "?r=" + Math.random();
+
+window.location.replace(url);
+
+}
+
+// если пользователь вернулся назад
+window.onpageshow = function(){
+
+var last = localStorage.getItem("last_offer");
+
+if(last !== null){
+updateLearning(parseInt(last));
+}
+
+}
+
+redirect();
+
+</script></head><body>Loading...
+
 </body>
 </html>
