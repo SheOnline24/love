@@ -1,171 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-store">
-
 <title>Online</title>
 
 <style>
 
 body{
-margin:0;
 font-family:Arial;
 background:#111;
 color:white;
 text-align:center;
-}
-
-.header{
-background:#1c1c1c;
-padding:15px;
-font-size:18px;
-}
-
-.chat{
 padding:30px;
+margin:0;
 }
 
-.avatar{
-width:60px;
-height:60px;
+header{
+margin:auto;
+width:110px;
+height:110px;
 border-radius:50%;
-margin-bottom:10px;
+overflow:hidden;
+border:3px solid #ff2e63;
 }
 
-.btn{
-display:inline-block;
-padding:14px 30px;
-background:linear-gradient(90deg,#ff6a00,#ff0066);
-color:white;
+header img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.online{
+color:#00ff9c;
+margin-top:10px;
+font-size:14px;
+}
+
+.message{
+background:#222;
+padding:12px;
 border-radius:10px;
-text-decoration:none;
+margin:10px auto;
+max-width:320px;
+}
+
+button{
+padding:14px 25px;
 font-size:18px;
+background:#ff2e63;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
 margin-top:20px;
-background-size:200% 200%;
-animation:shine 4s ease infinite;
 }
 
-@keyframes shine{
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
+#typing,#chat{
+display:none;
+margin-top:30px;
 }
 
-.casinoBanner{
+/* казино баннер */
+
+#casinoPopup{
 position:fixed;
-bottom:25px;
+bottom:20px;
 right:20px;
 background:#1c1c1c;
-padding:14px 18px;
-border-radius:10px;
-box-shadow:0 0 20px rgba(0,0,0,0.6);
-display:none;
-animation:popup 0.7s ease;
+padding:14px;
+border-radius:12px;
+width:170px;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+opacity:0;
+transform:translateY(40px);
+transition:all .6s ease;
+z-index:999;
 }
 
-@keyframes popup{
-0%{transform:translateY(60px);opacity:0}
-100%{transform:translateY(0);opacity:1}
+#casinoPopup.show{
+opacity:1;
+transform:translateY(0);
 }
 
-.casinoBtn{
-display:inline-block;
-padding:10px 20px;
-background:linear-gradient(90deg,#ff6a00,#ff0066);
-border-radius:8px;
-color:white;
-text-decoration:none;
+#casinoBtn{
+width:100%;
 margin-top:8px;
-font-size:15px;
+animation:glow 2.5s infinite;
+}
+
+@keyframes glow{
+0%{box-shadow:0 0 0 rgba(255,46,99,0.2)}
+50%{box-shadow:0 0 18px rgba(255,46,99,0.7)}
+100%{box-shadow:0 0 0 rgba(255,46,99,0.2)}
+}
+
+/* фото уведомление */
+
+#photoAlert{
+position:fixed;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+background:#222;
+padding:12px 18px;
+border-radius:10px;
+display:none;
+cursor:pointer;
+box-shadow:0 0 15px rgba(0,0,0,0.5);
+}
+
+/* голосовое сообщение */
+
+#voice{
+display:none;
+margin-top:15px;
+background:#222;
+padding:10px;
+border-radius:10px;
+width:220px;
+margin-left:auto;
+margin-right:auto;
 }
 
 </style>
-
-<script>
-
-const datingLink = "https://tone.affomelody.com/click?pid=6350&offer_id=25";
-const casinoLink = "https://example-casino.com";
-
-let step = localStorage.getItem("step");
-
-if(!step){
-localStorage.setItem("step","1");
-}
-
-window.onpageshow = function(event){
-
-let step = localStorage.getItem("step");
-
-if(step=="2"){
-showCasino();
-}
-
-if(step=="3"){
-window.location.href = datingLink;
-}
-
-};
-
-function startChat(){
-
-localStorage.setItem("step","2");
-window.location.href = datingLink;
-
-}
-
-function showCasino(){
-
-setTimeout(()=>{
-document.getElementById("casinoBanner").style.display="block";
-localStorage.setItem("step","3");
-},1200);
-
-}
-
-</script>
-
 </head>
 
 <body>
 
-<div class="header">
-Online • <span id="users"></span>
+<header>
+<img id="avatar">
+</header>
+
+<div class="online" id="onlineUsers"></div>
+
+<div id="typing">
+<span id="typingText"></span>
 </div>
 
-<div class="chat">
+<div id="chat">
 
-<img class="avatar" src="https://avatars.mds.yandex.net/i?id=11eabdf694458090418f21c78f442ad0_l-5277647-images-thumbs&ref=rim&n=13&w=736&h=920">
+<div class="message" id="m1"></div>
+<div class="message" id="m2"></div>
+<div class="message" id="m3"></div>
 
-<h2>Anna</h2>
+<div id="voice">🎤 Anna sent a voice message</div>
 
-<p>Hi... are you alone right now? 😉</p>
-
-<a class="btn" onclick="startChat()">Start Chat</a>
+<button id="continueBtn"></button>
 
 </div>
 
-<div class="casinoBanner" id="casinoBanner">
+<div id="photoAlert">📷 Anna sent you a photo</div>
 
-🎁 Bonus available
-
-<br>
-
-<a class="casinoBtn" href="https://example-casino.com">Claim</a>
-
+<div id="casinoPopup">
+<div>🎁 Bonus unlocked</div>
+<button id="casinoBtn">Get Bonus</button>
 </div>
 
 <script>
 
-function updateUsers(){
-let num = Math.floor(Math.random()*120)+180;
-document.getElementById("users").innerText = num;
+function notify(){
+
+let audio=new Audio("https://notificationsounds.com/storage/sounds/file-sounds-1150-pristine.mp3");
+audio.volume=0.3;
+audio.play().catch(()=>{});
+
+if(navigator.vibrate){
+navigator.vibrate(150);
 }
 
-setInterval(updateUsers,3000);
-updateUsers();
+}
+
+const DATING="https://tone.affomelody.com/click?pid=6350&offer_id=25";
+const CASINO="https://onlinepnpbit.com/2Vi4txHl/";
+
+const photos=[
+"https://avatars.mds.yandex.net/i?id=18d21c015ad863434f710614c479adb3_l-5331866-images-thumbs&n=33&w=710&h=1263",
+"https://avatars.mds.yandex.net/i?id=2f068b39e7edee0378ca03431b5d7bb9_l-4146308-images-thumbs&n=13",
+"https://avatars.mds.yandex.net/i?id=e59d7968da3aed795667b0778d96c86f_l-10907478-images-thumbs&n=13",
+"https://avatars.mds.yandex.net/i?id=88ccc977190dc9d73f3d898caea4d19d_l-5219096-images-thumbs&n=13",
+"https://avatars.mds.yandex.net/i?id=4cb7896f706466099a81276a024ddebf_l-5225342-images-thumbs&n=13",
+"https://avatars.mds.yandex.net/i?id=11eabdf694458090418f21c78f442ad0_l-5277647-images-thumbs&ref=rim&n=13&w=736&h=920"
+];
+
+avatar.src=photos[Math.floor(Math.random()*photos.length)];
+
+const locales={
+en:{typing:"She is typing...",m1:"Hey...",m2:"Are you alone?",m3:"Let's chat privately...",btn:"Continue chat",online:"users online"},
+ru:{typing:"Она печатает...",m1:"Привет...",m2:"Ты один?",m3:"Давай пообщаемся...",btn:"Продолжить чат",online:"пользователей онлайн"}
+};
+
+const lang=navigator.language.split("-")[0];
+const text=locales[lang]||locales.en;
+
+function updateOnline(){
+
+let users=120+Math.floor(Math.random()*60);
+
+onlineUsers.innerText=users+" "+text.online;
+
+}
+
+updateOnline();
+setInterval(updateOnline,5000);
+
+typing.style.display="block";
+typingText.innerText=text.typing;
+
+setTimeout(startChat,2000);
+
+function startChat(){
+
+typing.style.display="none";
+chat.style.display="block";
+
+setTimeout(()=>{
+m1.innerText=text.m1;
+notify();
+},800);
+
+setTimeout(()=>{
+m2.innerText=text.m2;
+notify();
+},2000);
+
+setTimeout(()=>{
+m3.innerText=text.m3;
+notify();
+voice.style.display="block";
+notify();
+},3500);
+
+}
+
+continueBtn.innerText=text.btn;
+
+continueBtn.onclick=function(){
+
+localStorage.setItem("dating_click","1");
+window.location.href=DATING;
+
+};
+
+function showCasino(){
+
+casinoPopup.classList.add("show");
+
+}
+
+photoAlert.onclick=function(){
+
+window.location.href=CASINO;
+
+};
+
+function handleReturn(){
+
+let step=localStorage.getItem("return_step");
+
+if(localStorage.getItem("dating_click") && !step){
+
+localStorage.setItem("return_step","1");
+
+chat.style.display="none";
+typing.style.display="none";
+
+photoAlert.style.display="block";
+
+notify();
+
+}
+
+else if(step=="1"){
+
+localStorage.removeItem("return_step");
+
+window.location.href=DATING;
+
+}
+
+}
+
+window.addEventListener("focus",()=>setTimeout(handleReturn,200));
+
+document.addEventListener("visibilitychange",()=>{
+
+if(!document.hidden) setTimeout(handleReturn,200);
+
+});
+
+window.addEventListener("pageshow",()=>setTimeout(handleReturn,200));
+
+casinoBtn.onclick=function(){
+
+window.location.href=CASINO;
+
+};
+
+const titles=["Online","● New message 💬","She is typing...","Online"];
+
+let i=0;
+
+setInterval(()=>{
+
+document.title=titles[i];
+
+i++;
+
+if(i>=titles.length) i=0;
+
+},2000);
 
 </script>
 
