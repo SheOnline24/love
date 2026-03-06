@@ -11,7 +11,6 @@ body{
   color:white;
   text-align:center;
   padding:40px;
-  margin:0;
 }
 header{
   width:100%;
@@ -20,11 +19,6 @@ header{
   border-radius:12px;
   overflow:hidden;
   position:relative;
-  opacity:0;
-  transition: opacity 1s ease;
-}
-header.show{
-  opacity:1;
 }
 header img{
   width:100%;
@@ -52,50 +46,44 @@ button{
   border-radius:10px;
   margin:10px auto;
   max-width:300px;
-  opacity:0;
-  transition: opacity 0.5s ease;
-}
-.message.show{
-  opacity:1;
 }
 .online{
   color:#00ff9c;
   margin-top:10px;
 }
 
-/* ===== Казино баннер ===== */
+/* ===== КАЗИНО БАННЕР ===== */
 #casinoPopup{
   position: fixed;
-  bottom:30px;
-  left:50%;
-  transform: translateX(-50%) translateY(100%);
+  bottom:20px;
+  right:20px;
   background:#1a1a1a;
-  padding:20px 30px;
-  border-radius:12px;
-  box-shadow: 0 0 20px rgba(255,46,99,0.4);
+  padding:15px 20px;
+  border-radius:10px;
+  box-shadow: 0 0 15px rgba(255,46,99,0.4);
+  width:200px;
   opacity:0;
+  transform: translateY(100%) scale(0.8);
   transition: opacity 0.5s ease;
   z-index:999;
 }
 #casinoPopup.show{
   opacity:1;
-  animation: bounce 0.8s ease forwards;
+  animation: bounceCorner 0.8s ease forwards;
 }
-@keyframes bounce {
-  0% { transform: translateX(-50%) translateY(100%) scale(0.5); }
-  60% { transform: translateX(-50%) translateY(-20px) scale(1.05); }
-  80% { transform: translateX(-50%) translateY(10px) scale(0.95); }
-  100% { transform: translateX(-50%) translateY(0) scale(1); }
+@keyframes bounceCorner {
+  0% { transform: translateY(100%) scale(0.8); }
+  60% { transform: translateY(-10px) scale(1.05); }
+  80% { transform: translateY(5px) scale(0.95); }
+  100% { transform: translateY(0) scale(1); }
 }
-
-/* ===== Кнопка мягкое мигание ===== */
 #casinoBtn.pulse{
   animation: pulse 2s infinite;
 }
 @keyframes pulse {
-  0% { box-shadow: 0 0 10px rgba(255,46,99,0.3);}
-  50% { box-shadow: 0 0 18px rgba(255,46,99,0.5);}
-  100% { box-shadow: 0 0 10px rgba(255,46,99,0.3);}
+  0% { box-shadow: 0 0 8px rgba(255,46,99,0.3);}
+  50% { box-shadow: 0 0 15px rgba(255,46,99,0.5);}
+  100% { box-shadow: 0 0 8px rgba(255,46,99,0.3);}
 }
 </style>
 </head>
@@ -135,9 +123,9 @@ const photos=[
 "https://avatars.mds.yandex.net/i?id=4cb7896f706466099a81276a024ddebf_l-5225342-images-thumbs&n=13",
 "https://avatars.mds.yandex.net/i?id=11eabdf694458090418f21c78f442ad0_l-5277647-images-thumbs&ref=rim&n=13&w=736&h=920"
 ];
-const header = document.getElementById("headerPhoto");
-header.querySelector("img").src = photos[Math.floor(Math.random()*photos.length)];
-header.classList.add("show");
+// Рандомная картинка в шапке
+document.getElementById("headerPhoto").querySelector("img").src=
+photos[Math.floor(Math.random()*photos.length)];
 
 // ===== ЯЗЫКИ =====
 const locales={
@@ -150,12 +138,7 @@ const text=locales[lang]||locales.en;
 // ===== ONLINE USERS =====
 function updateOnline(){
   let users=120+Math.floor(Math.random()*60);
-  const onlineEl = document.getElementById("onlineUsers");
-  onlineEl.style.opacity=0;
-  setTimeout(()=>{
-    onlineEl.innerText = users + " " + text.online;
-    onlineEl.style.opacity=1;
-  },200);
+  document.getElementById("onlineUsers").innerText=users+" "+text.online;
 }
 updateOnline();
 setInterval(updateOnline,5000);
@@ -171,23 +154,26 @@ function startChat(){
   typing.style.display="none";
   const chat=document.getElementById("chat");
   chat.style.display="block";
-  setTimeout(()=>{document.getElementById("m1").innerText=text.m1; document.getElementById("m1").classList.add("show");},800);
-  setTimeout(()=>{document.getElementById("m2").innerText=text.m2; document.getElementById("m2").classList.add("show");},2000);
-  setTimeout(()=>{document.getElementById("m3").innerText=text.m3; document.getElementById("m3").classList.add("show");},3500);
+  setTimeout(()=>{document.getElementById("m1").innerText=text.m1;},800);
+  setTimeout(()=>{document.getElementById("m2").innerText=text.m2;},2000);
+  setTimeout(()=>{document.getElementById("m3").innerText=text.m3;},3500);
 }
 document.getElementById("continueBtn").innerText=text.btn;
 
-// ===== РАНДОМНЫЕ НАДПИСИ ДЛЯ КАЗИНО =====
-const casinoTexts=["Get Bonus","Claim Your Prize","🎁 Grab Now","Open Reward","Spin the Wheel","Lucky Bonus"];
-function getRandomCasinoText(){ return casinoTexts[Math.floor(Math.random()*casinoTexts.length)]; }
+// ===== ПЕРЕХОД НА DATING =====
+document.getElementById("continueBtn").onclick=function(){
+  localStorage.setItem("dating_click","1");
+  window.location.href=DATING;
+};
 
 // ===== ПОКАЗ КАЗИНО =====
 function showCasino(){
   const casino=document.getElementById("casinoPopup");
   casino.classList.add("show");
   const btn=casino.querySelector("button");
-  btn.textContent = getRandomCasinoText();
   btn.classList.add("pulse");
+  // Снимаем эффект через 3 секунды
+  setTimeout(()=>{btn.classList.remove("pulse");},3000);
 }
 
 // ===== РАНДОМНЫЙ ПОКАЗ КАЗИНО ДЛЯ НОВЫХ =====
@@ -201,15 +187,9 @@ function handleReturn(){
     showCasino();
   }
 }
-['focus','pageshow','visibilitychange'].forEach(ev=>{
-  window.addEventListener(ev, ()=>{ if(ev!=='visibilitychange' || !document.hidden) setTimeout(handleReturn,100); });
-});
-
-// ===== ПЕРЕХОД НА DATING =====
-document.getElementById("continueBtn").onclick=function(){
-  localStorage.setItem("dating_click","1");
-  window.location.href=DATING;
-};
+window.addEventListener("focus",()=>{ setTimeout(handleReturn,100); });
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) setTimeout(handleReturn,100); });
+window.addEventListener("pageshow",()=>{ setTimeout(handleReturn,100); });
 
 // ===== КАЗИНО КНОПКА =====
 document.getElementById("casinoBtn").onclick=function(){
