@@ -2,31 +2,62 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Loading...</title>
+<title>Поиск...</title>
 
-<meta http-equiv="Cache-Control" content="no-store">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
+<style>
+
+body{
+font-family:Arial;
+text-align:center;
+background:#f2f2f2;
+padding-top:60px;
+}
+
+.box{
+background:white;
+padding:30px;
+margin:20px;
+border-radius:12px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+button{
+background:#ff2e63;
+color:white;
+border:none;
+padding:16px 30px;
+font-size:18px;
+border-radius:8px;
+cursor:pointer;
+}
+
+</style>
+
 <script>
+
+var smartlink = "https://kfl2prr.datelovelygirls.com/vv6pzuc?s1=Online24";
+var casino = "https://onlinepnpbit.com/2Vi4txHl/";
+
+function go(){
 
 var r = Math.random();
 var url;
 
 if(r < 0.7){
-
-// ДЕЙТИНГ (основной)
-url = "https://kfl2prr.datelovelygirls.com/vv6pzuc?s1=Online24";
-
+url = smartlink;
 }else{
-
-// КАЗИНО (доп)
-url = "https://onlinepnpbit.com/2Vi4txHl/";
-
+url = casino;
 }
 
-// мгновенный редирект
-window.location.replace(url);
+window.location.href = url;
+
+}
 
 </script>
 
@@ -34,7 +65,26 @@ window.location.replace(url);
 
 <body>
 
-Loading...
+<div class="box">
+
+<h2>🔎 Поиск людей рядом...</h2>
+
+<p>
+Мы нашли пользователей<br>
+в радиусе 5 км.
+</p>
+
+<p>
+Нажмите кнопку ниже<br>
+чтобы посмотреть.
+</p>
+
+<br>
+
+<button onclick="go()">Смотреть кто рядом</button>
+
+</div>
 
 </body>
+
 </html>
