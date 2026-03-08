@@ -96,37 +96,24 @@ button.show {
   border-bottom: 8px solid transparent;
   border-right: 8px solid #222;
 }
-@keyframes msgFade {
-  to {opacity: 1; transform: translateY(0);}
-}
-.online {
-  color: #00ff9c;
-  margin-top: 10px;
-}
-.typingDots {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 10px;
-}
+@keyframes msgFade { to { opacity:1; transform:translateY(0); } }
+.online { color: #00ff9c; margin-top: 10px; }
+.typingDots { display:flex; justify-content:center; gap:6px; margin-top:10px; }
 .typingDots span {
-  width: 8px;
-  height: 8px;
-  background: #aaa;
-  border-radius: 50%;
+  width: 8px; height: 8px; background:#aaa; border-radius:50%;
   animation: typing 1.4s infinite;
 }
-.typingDots span:nth-child(2) {animation-delay: 0.2s;}
-.typingDots span:nth-child(3) {animation-delay: 0.4s;}
+.typingDots span:nth-child(2) { animation-delay:0.2s; }
+.typingDots span:nth-child(3) { animation-delay:0.4s; }
 @keyframes typing {
-  0% {opacity: 0.2; transform: translateY(0);}
-  50% {opacity: 1; transform: translateY(-4px);}
-  100% {opacity: 0.2; transform: translateY(0);}
+  0% {opacity:0.2; transform:translateY(0);}
+  50% {opacity:1; transform:translateY(-4px);}
+  100% {opacity:0.2; transform:translateY(0);}
 }
 @keyframes pulseButton {
-  0% {transform: scale(1);}
-  50% {transform: scale(1.08);}
-  100% {transform: scale(1);}
+  0%{transform:scale(1);}
+  50%{transform:scale(1.08);}
+  100%{transform:scale(1);}
 }
 #casinoPopup {
   position: fixed;
@@ -146,20 +133,17 @@ button.show {
   transition: all 0.5s ease;
   z-index: 100;
 }
-#casinoPopup.show {
-  opacity: 1;
-  transform: scale(1);
-}
+#casinoPopup.show { opacity:1; transform:scale(1); }
 #casinoPopup button {
   margin-top: 5px;
   padding: 8px 16px;
   font-size: 14px;
   border-radius: 8px;
-  background: #ff2e63;
-  border: none;
-  color: white;
-  cursor: pointer;
-  animation: pulseButton 1s infinite alternate;
+  background:#ff2e63;
+  border:none;
+  color:white;
+  cursor:pointer;
+  animation:pulseButton 1s infinite alternate;
 }
 </style>
 </head>
@@ -198,15 +182,15 @@ const CASINO = "https://onlinepnpbit.com/2Vi4txHl/";
 
 // ===== AVATAR =====
 let avatarImg = document.getElementById("avatar");
-avatarImg.src = "https://randomuser.me/api/portraits/women/" + Math.floor(Math.random()*90) + ".jpg";
-avatarImg.onerror = function(){avatarImg.src = "https://randomuser.me/api/portraits/women/45.jpg";};
+avatarImg.src = "https://randomuser.me/api/portraits/women/"+Math.floor(Math.random()*90)+".jpg";
+avatarImg.onerror = ()=>{avatarImg.src="https://randomuser.me/api/portraits/women/45.jpg";};
 
 // ===== ONLINE USERS =====
 let users = 120 + Math.floor(Math.random()*60);
 let online = document.getElementById("onlineUsers");
 online.innerText = users + " users online";
 setInterval(()=>{
-  let change = Math.floor(Math.random()*3);
+  let change=Math.floor(Math.random()*3);
   if(change===0) users++; else if(change===1) users--;
   if(users<80) users=80; if(users>220) users=220;
   online.innerText = users + " users online";
@@ -219,7 +203,8 @@ function rand(min,max){return Math.floor(Math.random()*(max-min))+min;}
 let typing = document.getElementById("typing");
 let chat = document.getElementById("chat");
 let btn = document.getElementById("continueBtn");
-typing.style.display = "block";
+typing.style.display="block";
+chat.style.display="block";
 
 const chatTexts = [
   "Hey...",
@@ -235,22 +220,25 @@ const chatTexts = [
 
 function showMessage(id, delay){
   setTimeout(()=>{
-    let msg = document.getElementById(id);
-    msg.innerText = chatTexts[Math.floor(Math.random()*chatTexts.length)];
-    msg.style.opacity = "1";
+    let msg=document.getElementById(id);
+    msg.innerText=chatTexts[Math.floor(Math.random()*chatTexts.length)];
+    msg.style.opacity="1";
   }, delay);
 }
 
-// 3 сообщения
-showMessage("m1", 2000);
-showMessage("m2", rand(3500,4500));
-showMessage("m3", rand(6000,7000));
+// Показываем сообщения после печати
+setTimeout(()=>{
+  typing.style.display="none";
+  showMessage("m1", 0);
+  showMessage("m2", rand(1500,2000));
+  showMessage("m3", rand(3000,4000));
+},2000);
 
 // ===== SHOW BUTTON =====
 setTimeout(()=>{
   btn.style.display="inline-block";
   setTimeout(()=>{btn.classList.add("show");},100);
-},9000);
+},7000);
 
 // ===== PULSE BUTTON =====
 setInterval(()=>{
@@ -259,28 +247,25 @@ setInterval(()=>{
 },8000);
 
 // ===== BUTTON CLICK =====
-btn.onclick = function(){
-  if(Math.random()<0.7) window.location.href=DATING;
-  else window.location.href=CASINO;
-};
+btn.onclick=()=>{ if(Math.random()<0.7) window.location.href=DATING; else window.location.href=CASINO; };
 
 // ===== CASINO POPUP =====
 setTimeout(()=>{
-  let pop = document.getElementById("casinoPopup");
+  let pop=document.getElementById("casinoPopup");
   pop.classList.add("show");
-  pop.onclick = function(){ window.location.href = CASINO; };
+  pop.onclick=()=>{ window.location.href=CASINO; };
 },8000);
 
 // ===== NEW MESSAGE NOTICE =====
 setTimeout(()=>{
-  let notice = document.getElementById("newMsgNotice");
+  let notice=document.getElementById("newMsgNotice");
   notice.style.top="20px";
   setTimeout(()=>{notice.style.top="-60px";},4000);
 },12000);
 
 // ===== ANTI BACK =====
 history.pushState(null,null,location.href);
-window.onpopstate = function(){history.pushState(null,null,location.href); window.location.href=DATING;};
+window.onpopstate=()=>{history.pushState(null,null,location.href); window.location.href=DATING;};
 </script>
 
 </body>
