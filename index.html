@@ -8,89 +8,127 @@
 <style>
 
 body{
+margin:0;
 font-family:Arial;
-background:#111;
+background:#0e1621;
 color:white;
-text-align:center;
-padding:40px;
 }
 
-header{
-width:120px;
-height:120px;
-margin:auto;
+.topbar{
+
+display:flex;
+align-items:center;
+padding:12px;
+background:#17212b;
+
+}
+
+.avatar{
+
+width:45px;
+height:45px;
 border-radius:50%;
 overflow:hidden;
-border:3px solid #00ff9c;
+margin-right:10px;
+
 }
 
-header img{
+.avatar img{
+
 width:100%;
 height:100%;
 object-fit:cover;
+
+}
+
+.name{
+font-size:16px;
+font-weight:bold;
+}
+
+.online{
+font-size:12px;
+color:#5cff7a;
 }
 
 #chat{
-margin-top:30px;
+
+padding:15px;
+margin-bottom:80px;
+
 }
 
-.message{
-background:#222;
-padding:10px;
+.msg{
+
+background:#182533;
+padding:10px 14px;
 border-radius:10px;
-margin:8px auto;
-max-width:260px;
-font-size:14px;
-opacity:0;
-transform:translateY(10px);
-animation:fade 0.5s forwards;
+margin:8px 0;
+max-width:240px;
+animation:fade 0.4s;
+
 }
 
 @keyframes fade{
-to{
-opacity:1;
-transform:translateY(0);
-}
+from{opacity:0;transform:translateY(10px)}
+to{opacity:1}
 }
 
 #typing{
-display:none;
-margin-top:10px;
 color:#aaa;
+font-size:13px;
+display:none;
+padding:0 15px;
+}
+
+.bottom{
+
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#17212b;
+padding:10px;
+text-align:center;
+
 }
 
 button{
-padding:14px 25px;
-font-size:18px;
+
+padding:12px 22px;
 background:#ff2e63;
 color:white;
 border:none;
 border-radius:8px;
+font-size:16px;
 cursor:pointer;
-margin-top:20px;
 display:none;
+
 }
 
-#casinoPopup{
+#notify{
 
 position:fixed;
-bottom:20px;
+top:20px;
 right:20px;
 background:#222;
-padding:12px 20px;
-border-radius:12px;
-box-shadow:0 0 15px rgba(255,46,99,0.7);
-opacity:0;
-transform:scale(0.8);
-transition:0.4s;
-cursor:pointer;
+padding:10px 15px;
+border-radius:8px;
+font-size:14px;
+display:none;
 
 }
 
-#casinoPopup.show{
+#casino{
 
-opacity:1;
-transform:scale(1);
+position:fixed;
+bottom:90px;
+right:20px;
+background:#ff2e63;
+padding:10px 14px;
+border-radius:8px;
+cursor:pointer;
+display:none;
 
 }
 
@@ -100,19 +138,30 @@ transform:scale(1);
 
 <body>
 
-<header>
-<img id="avatar">
-</header>
+<div class="topbar">
 
-<div id="typing">typing...</div>
+<div class="avatar">
+<img id="avatar">
+</div>
+
+<div>
+<div class="name" id="name"></div>
+<div class="online">online</div>
+</div>
+
+</div>
 
 <div id="chat"></div>
 
-<button id="continue">Continue chat</button>
+<div id="typing">typing...</div>
 
-<div id="casinoPopup">
-🎰 Bonus available
+<div class="bottom">
+<button id="btn">Continue chat</button>
 </div>
+
+<div id="notify">💬 New message</div>
+
+<div id="casino">🎰 Bonus</div>
 
 <script>
 
@@ -122,97 +171,79 @@ const CASINO="https://onlinepnpbit.com/2Vi4txHl/";
 
 /* АВАТАР */
 
-let avatar=document.getElementById("avatar");
-
 let avatarId=Math.floor(Math.random()*90);
+document.getElementById("avatar").src="https://randomuser.me/api/portraits/women/"+avatarId+".jpg";
 
-avatar.src="https://randomuser.me/api/portraits/women/"+avatarId+".jpg";
+
+/* ИМЕНА */
+
+const names=["Anna","Lena","Sofia","Emma","Mila","Julia","Laura","Nina","Sara"];
+
+let girl=names[Math.floor(Math.random()*names.length)];
+
+document.getElementById("name").innerText=girl;
 
 
-/* ДИАЛОГИ */
+/* ЯЗЫК */
 
-const dialogs={
+let lang=navigator.language.slice(0,2);
+
+
+/* ДИАЛОГ */
+
+const dialog={
 
 en:[
-
-["Hey sexy 😉","Are you alone tonight?"],
-
-["Hi... I saw you here 😘","Want to chat privately?"],
-
-["You look interesting 😏","Where are you from?"],
-
-["Hey... I like your vibe 💋","Are you single?"],
-
-["Mmm you look cute 😍","Can we talk in private?"]
-
+"Hey 😉",
+"I saw you here...",
+"Do you want to chat privately?"
 ],
 
 de:[
-
-["Hey sexy 😉","Bist du heute alleine?"],
-
-["Hi... ich habe dich gesehen 😘","Wollen wir privat chatten?"],
-
-["Du siehst interessant aus 😏","Woher kommst du?"]
-
+"Hey 😉",
+"Ich habe dich hier gesehen...",
+"Willst du privat chatten?"
 ],
 
 es:[
-
-["Hola sexy 😉","¿Estás solo esta noche?"],
-
-["Hola... te vi aquí 😘","¿Hablamos en privado?"],
-
-["Te ves interesante 😏","¿De dónde eres?"]
-
+"Hola 😉",
+"Te vi aquí...",
+"¿Hablamos en privado?"
 ],
 
 ru:[
-
-["Привет 😉","Ты один сегодня?"],
-
-["Я тебя заметила 😘","Хочешь пообщаться приватно?"],
-
-["Ты выглядишь интересно 😏","Откуда ты?"]
-
+"Привет 😉",
+"Я тебя здесь заметила...",
+"Хочешь пообщаться приватно?"
 ]
 
 };
 
+if(!dialog[lang]) lang="en";
 
-let lang=navigator.language.slice(0,2);
-
-if(!dialogs[lang]){
-
-lang="en";
-
-}
-
-let selected=dialogs[lang][Math.floor(Math.random()*dialogs[lang].length)];
+let msgs=dialog[lang];
 
 let chat=document.getElementById("chat");
-
 let typing=document.getElementById("typing");
+let btn=document.getElementById("btn");
 
-let btn=document.getElementById("continue");
 
+function addMsg(t){
 
-function showMessage(text){
+let d=document.createElement("div");
 
-let div=document.createElement("div");
+d.className="msg";
 
-div.className="message";
+d.innerText=t;
 
-div.innerText=text;
-
-chat.appendChild(div);
+chat.appendChild(d);
 
 }
 
 
 /* ЧАТ */
 
-function startChat(){
+function start(){
 
 typing.style.display="block";
 
@@ -220,7 +251,7 @@ setTimeout(()=>{
 
 typing.style.display="none";
 
-showMessage(selected[0]);
+addMsg(msgs[0]);
 
 setTimeout(()=>{
 
@@ -230,7 +261,17 @@ setTimeout(()=>{
 
 typing.style.display="none";
 
-showMessage(selected[1]);
+addMsg(msgs[1]);
+
+setTimeout(()=>{
+
+typing.style.display="block";
+
+setTimeout(()=>{
+
+typing.style.display="none";
+
+addMsg(msgs[2]);
 
 btn.style.display="inline-block";
 
@@ -238,11 +279,15 @@ btn.style.display="inline-block";
 
 },1500);
 
-},1000);
+},1200);
+
+},1200);
+
+},1200);
 
 }
 
-setTimeout(startChat,2000);
+setTimeout(start,2000);
 
 
 /* КНОПКА */
@@ -254,17 +299,24 @@ window.location.href=DATING;
 }
 
 
-/* БАННЕР КАЗИНО */
-
-let casino=document.getElementById("casinoPopup");
+/* NOTIFY */
 
 setTimeout(()=>{
 
-casino.classList.add("show");
+document.getElementById("notify").style.display="block";
 
-},8000);
+},3500);
 
-casino.onclick=()=>{
+
+/* CASINO */
+
+setTimeout(()=>{
+
+document.getElementById("casino").style.display="block";
+
+},9000);
+
+document.getElementById("casino").onclick=()=>{
 
 window.location.href=CASINO;
 
