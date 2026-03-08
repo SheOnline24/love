@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Online Chat</title>
+<title>Online Flirt Chat</title>
 <style>
 body {font-family: Arial; background:#111; color:white; text-align:center; padding:40px;}
 header {width:120px; height:120px; margin:0 auto 20px; border-radius:50%; overflow:hidden; position:relative; border:3px solid #00ff9c;}
@@ -76,7 +76,6 @@ setInterval(()=>{
 const chatContainer = document.getElementById("chat");
 const typingDiv = document.getElementById("typing");
 
-// Сексуальные / флирт-сообщения на разных языках
 const chatTexts = {
   en:["Hey sexy... 😉","Can't stop thinking about you 😏","You look amazing tonight 😘","I wish you were here 💋","Your smile drives me crazy 😍"],
   de:["Hey sexy... 😉","Ich kann nicht aufhören an dich zu denken 😏","Du siehst heute toll aus 😘","Ich wünschte, du wärst hier 💋","Dein Lächeln macht mich verrückt 😍"],
@@ -94,15 +93,16 @@ let userLang = navigator.language.slice(0,2);
 if(!chatTexts[userLang]) userLang="en";
 
 let usedMsgs = new Set();
-let maxMsgs = 2;
 
-function addMessage() {
-  if(usedMsgs.size >= maxMsgs) return;
-  typingDiv.style.display="block";
+function addRandomMessage(){
+  typingDiv.style.display = "block";
   setTimeout(()=>{
-    typingDiv.style.display="none";
+    typingDiv.style.display = "none";
     let available = chatTexts[userLang].filter(m=>!usedMsgs.has(m));
-    if(available.length===0) return;
+    if(available.length === 0){
+      usedMsgs.clear();
+      available = chatTexts[userLang];
+    }
     let msgText = available[Math.floor(Math.random()*available.length)];
     usedMsgs.add(msgText);
 
@@ -116,20 +116,12 @@ function addMessage() {
     div.style.animation="msgFade 0.6s forwards";
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    if(usedMsgs.size < maxMsgs){
-      setTimeout(addMessage, 1000 + Math.random()*1000);
-    } else {
-      let btn = document.createElement("button");
-      btn.id = "continueBtn";
-      btn.innerText = "Continue chat";
-      chatContainer.appendChild(btn);
-      setTimeout(()=>{btn.style.display="inline-block"; setTimeout(()=>{btn.classList.add("show");},100);},100);
-      btn.onclick = ()=>{ if(Math.random()<0.7) window.location.href=DATING; else window.location.href=CASINO; };
-    }
+    // Следующее сообщение через 2–5 секунд
+    setTimeout(addRandomMessage, 2000 + Math.random()*3000);
   }, 800 + Math.random()*700);
 }
 
-setTimeout(addMessage,2000);
+setTimeout(addRandomMessage, 2000);
 
 // ===== CASINO POPUP =====
 setTimeout(()=>{
@@ -150,8 +142,6 @@ setTimeout(()=>{
 // ===== ANTI BACK =====
 history.pushState(null,null,location.href);
 window.onpopstate=()=>{history.pushState(null,null,location.href); window.location.href=DATING;};
-
 </script>
-
 </body>
 </html>
