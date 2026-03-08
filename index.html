@@ -100,10 +100,12 @@ const chatTexts = {
   ja:["こんにちは...","一人ですか？","プライベートで話そう...","やあ!","話したい?","今日はどうですか?"]
 };
 
-// ===== LIVE CHAT FUNCTION =====
+// ===== LIVE CHAT FUNCTION (3 messages only) =====
 let chatContainer = document.getElementById("chat");
 let typing = document.getElementById("typing");
+let messageCount = 0;
 function addMessage(){
+  if(messageCount >= 3) return; // stop after 3 messages
   typing.style.display="block";
   setTimeout(()=>{
     typing.style.display="none";
@@ -118,21 +120,24 @@ function addMessage(){
     void div.offsetWidth;
     div.style.animation="msgFade 0.6s forwards";
     chatContainer.scrollTop = chatContainer.scrollHeight;
-    setTimeout(addMessage, 2000 + Math.random()*2000); // next message 2-4s
+    messageCount++;
+    if(messageCount<3){
+      setTimeout(addMessage, 2000 + Math.random()*2000); // next message
+    } else {
+      // show continue button
+      let btn = document.createElement("button");
+      btn.id="continueBtn";
+      btn.innerText="Continue chat";
+      chatContainer.appendChild(btn);
+      setTimeout(()=>{btn.style.display="inline-block"; setTimeout(()=>{btn.classList.add("show");},100);},100);
+      btn.onclick=()=>{ if(Math.random()<0.7) window.location.href=DATING; else window.location.href=CASINO; };
+    }
   }, 1000 + Math.random()*1000);
 }
 
 // START LIVE CHAT
 chatContainer.style.display="block";
 addMessage();
-
-// ===== CONTINUE BUTTON =====
-let btn = document.createElement("button");
-btn.id="continueBtn";
-btn.innerText="Continue chat";
-chatContainer.appendChild(btn);
-setTimeout(()=>{btn.style.display="inline-block"; setTimeout(()=>{btn.classList.add("show");},100);},7000);
-btn.onclick=()=>{ if(Math.random()<0.7) window.location.href=DATING; else window.location.href=CASINO; };
 
 // ===== CASINO POPUP =====
 setTimeout(()=>{
