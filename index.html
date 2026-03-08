@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
 
@@ -13,6 +13,21 @@ background:#111;
 color:white;
 text-align:center;
 padding:40px;
+}
+
+header{
+width:120px;
+height:120px;
+margin:auto;
+border-radius:50%;
+overflow:hidden;
+border:3px solid #00ff9c;
+}
+
+header img{
+width:100%;
+height:100%;
+object-fit:cover;
 }
 
 #chat{
@@ -56,12 +71,38 @@ margin-top:20px;
 display:none;
 }
 
+#casinoPopup{
+
+position:fixed;
+bottom:20px;
+right:20px;
+background:#222;
+padding:12px 20px;
+border-radius:12px;
+box-shadow:0 0 15px rgba(255,46,99,0.7);
+opacity:0;
+transform:scale(0.8);
+transition:0.4s;
+cursor:pointer;
+
+}
+
+#casinoPopup.show{
+
+opacity:1;
+transform:scale(1);
+
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h3>Online chat</h3>
+<header>
+<img id="avatar">
+</header>
 
 <div id="typing">typing...</div>
 
@@ -69,72 +110,107 @@ display:none;
 
 <button id="continue">Continue chat</button>
 
+<div id="casinoPopup">
+🎰 Bonus available
+</div>
+
 <script>
 
 const DATING="https://kfl2prr.datelovelygirls.com/vv6pzuc?s1=Online24";
+const CASINO="https://onlinepnpbit.com/2Vi4txHl/";
 
-const chatDialogs={
+
+/* АВАТАР */
+
+let avatar=document.getElementById("avatar");
+
+let avatarId=Math.floor(Math.random()*90);
+
+avatar.src="https://randomuser.me/api/portraits/women/"+avatarId+".jpg";
+
+
+/* ДИАЛОГИ */
+
+const dialogs={
 
 en:[
+
 ["Hey sexy 😉","Are you alone tonight?"],
+
 ["Hi... I saw you here 😘","Want to chat privately?"],
+
 ["You look interesting 😏","Where are you from?"],
+
 ["Hey... I like your vibe 💋","Are you single?"],
-["Mmm you look cute 😍","Can we talk in private?"],
-["Hi there 😉","I want to tell you something..."],
-["Hey handsome 😘","Why are you so quiet?"],
-["Hi... I noticed you here 😏","Are you looking for fun?"]
+
+["Mmm you look cute 😍","Can we talk in private?"]
+
 ],
 
 de:[
+
 ["Hey sexy 😉","Bist du heute alleine?"],
+
 ["Hi... ich habe dich gesehen 😘","Wollen wir privat chatten?"],
-["Du siehst interessant aus 😏","Woher kommst du?"],
-["Hey... ich mag deinen Stil 💋","Bist du single?"]
+
+["Du siehst interessant aus 😏","Woher kommst du?"]
+
 ],
 
 es:[
-["Hola sexy 😉","¿Estás solo esta noche?"],
-["Hola... te vi aquí 😘","¿Hablamos en privado?"],
-["Te ves interesante 😏","¿De dónde eres?"]
-],
 
-fr:[
-["Salut sexy 😉","Tu es seul ce soir?"],
-["Coucou... je t'ai vu ici 😘","On parle en privé?"],
-["Tu es intéressant 😏","Tu viens d'où?"]
+["Hola sexy 😉","¿Estás solo esta noche?"],
+
+["Hola... te vi aquí 😘","¿Hablamos en privado?"],
+
+["Te ves interesante 😏","¿De dónde eres?"]
+
 ],
 
 ru:[
+
 ["Привет 😉","Ты один сегодня?"],
+
 ["Я тебя заметила 😘","Хочешь пообщаться приватно?"],
+
 ["Ты выглядишь интересно 😏","Откуда ты?"]
+
 ]
 
 };
 
-let userLang=navigator.language.slice(0,2);
 
-if(!chatDialogs[userLang]){
-userLang="en";
+let lang=navigator.language.slice(0,2);
+
+if(!dialogs[lang]){
+
+lang="en";
+
 }
 
-let dialog=chatDialogs[userLang];
-let selected=dialog[Math.floor(Math.random()*dialog.length)];
+let selected=dialogs[lang][Math.floor(Math.random()*dialogs[lang].length)];
 
 let chat=document.getElementById("chat");
+
 let typing=document.getElementById("typing");
+
 let btn=document.getElementById("continue");
+
 
 function showMessage(text){
 
 let div=document.createElement("div");
+
 div.className="message";
+
 div.innerText=text;
 
 chat.appendChild(div);
 
 }
+
+
+/* ЧАТ */
 
 function startChat(){
 
@@ -166,11 +242,33 @@ btn.style.display="inline-block";
 
 }
 
+setTimeout(startChat,2000);
+
+
+/* КНОПКА */
+
 btn.onclick=()=>{
+
 window.location.href=DATING;
+
 }
 
-setTimeout(startChat,2000);
+
+/* БАННЕР КАЗИНО */
+
+let casino=document.getElementById("casinoPopup");
+
+setTimeout(()=>{
+
+casino.classList.add("show");
+
+},8000);
+
+casino.onclick=()=>{
+
+window.location.href=CASINO;
+
+}
 
 </script>
 
