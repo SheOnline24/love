@@ -21,12 +21,7 @@ header {
   position: relative;
   border: 3px solid #00ff9c;
 }
-header img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
+header img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .online-indicator {
   position: absolute;
   bottom: 8px;
@@ -51,10 +46,7 @@ button {
   transform: scale(0.9);
   transition: 0.4s;
 }
-button.show {
-  opacity: 1;
-  transform: scale(1);
-}
+button.show { opacity: 1; transform: scale(1); }
 #typing, #chat, #casinoPopup, #newMsgNotice { display: none; margin-top: 30px; }
 #newMsgNotice {
   position: fixed;
@@ -92,12 +84,6 @@ button.show {
   border-bottom: 8px solid transparent;
   border-right: 8px solid #222;
 }
-.translation {
-  font-size: 11px;
-  color: #aaa;
-  margin-top: 4px;
-  text-align: left;
-}
 @keyframes msgFade { to { opacity:1; transform:translateY(0); } }
 .online { color: #00ff9c; margin-top: 10px; }
 .typingDots { display:flex; justify-content:center; gap:6px; margin-top:10px; }
@@ -117,8 +103,6 @@ button.show {
   50%{transform:scale(1.08);}
   100%{transform:scale(1);}
 }
-
-/* ===== CASINO POPUP ===== */
 #casinoPopup {
   position: fixed;
   bottom: 20px;
@@ -137,28 +121,14 @@ button.show {
   z-index: 100;
   box-shadow: 0 0 15px rgba(255,46,99,0.6);
 }
-#casinoPopup.show {
-  opacity: 1;
-  transform: scale(1);
-}
-#casinoPopup.pulse {
-  animation: casinoPulse 1.2s infinite alternate;
-}
+#casinoPopup.show { opacity: 1; transform: scale(1); }
+#casinoPopup.pulse { animation: casinoPulse 1.2s infinite alternate; }
 @keyframes casinoPulse {
   0% { transform: scale(1); box-shadow: 0 0 15px rgba(255,46,99,0.6); }
   50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255,46,99,0.9); }
   100% { transform: scale(1); box-shadow: 0 0 15px rgba(255,46,99,0.6); }
 }
-#casinoPopup button {
-  margin-top: 6px;
-  padding: 8px 16px;
-  font-size: 14px;
-  border-radius: 8px;
-  background: #ff2e63;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
+#casinoPopup button { margin-top: 6px; padding: 8px 16px; font-size: 14px; border-radius: 8px; background: #ff2e63; border: none; color: white; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -212,43 +182,38 @@ setInterval(()=>{
 // ===== RANDOM DELAY =====
 function rand(min,max){return Math.floor(Math.random()*(max-min))+min;}
 
-// ===== CHAT ANIMATION + MULTILANGUAGE =====
-const chatTexts = [
-  "Hey...",
-  "Are you alone?",
-  "Let's chat privately...",
-  "Why are you silent? 🙂",
-  "Hi... are you looking for someone?",
-  "I just joined this chat",
-  "Do you want to talk with me?",
-  "Hey, I'm here too 🙂",
-  "Hello! Nice to meet you"
-];
+// ===== LANG SELECTION =====
+const languages = ['en','es','fr','de','zh','hi','ar','ru','pt','ja'];
+const userLang = languages[Math.floor(Math.random()*languages.length)];
 
-const languages = ['es','fr','de','zh','hi','ar','ru','pt','ja','it']; // 10 популярных языков
+// ===== CHAT TEXTS =====
+const chatTexts = {
+  en:["Hey...","Are you alone?","Let's chat privately..."],
+  es:["Hola...","¿Estás solo?","Hablemos en privado..."],
+  fr:["Salut...","Es-tu seul?","Discutons en privé..."],
+  de:["Hey...","Bist du allein?","Lass uns privat chatten..."],
+  zh:["嗨...","你一个人吗？","让我们私聊..."],
+  hi:["हे...","क्या आप अकेले हैं?","आइए निजी तौर पर चैट करें..."],
+  ar:["مرحباً...","هل أنت وحدك؟","دعنا نتحدث بشكل خاص..."],
+  ru:["Привет...","Ты один?","Давай пообщаемся приватно..."],
+  pt:["Oi...","Está sozinho?","Vamos conversar em privado..."],
+  ja:["こんにちは...","一人ですか？","プライベートで話そう..."]
+};
 
-function translateText(text){
-  // Простая имитация перевода: просто добавляем язык код для демонстрации
-  let result = '';
-  for(let lang of languages){
-    result += `[${lang}]: ${text} \n`;
-  }
-  return result;
-}
-
+// ===== SHOW MESSAGE =====
 function showMessage(id, delay){
   setTimeout(()=>{
     let msg=document.getElementById(id);
     msg.style.opacity="0";
     msg.style.animation="none";
-    void msg.offsetWidth; // force reflow
-    let text = chatTexts[Math.floor(Math.random()*chatTexts.length)];
-    msg.innerHTML = text + '<div class="translation">'+translateText(text)+'</div>';
+    void msg.offsetWidth;
+    let texts = chatTexts[userLang];
+    msg.innerText = texts[Math.floor(Math.random()*texts.length)];
     msg.style.animation="msgFade 0.6s forwards";
   }, delay);
 }
 
-// Показываем сообщения после печати
+// ===== CHAT =====
 let typing = document.getElementById("typing");
 let chat = document.getElementById("chat");
 let btn = document.getElementById("continueBtn");
@@ -257,9 +222,9 @@ chat.style.display="block";
 
 setTimeout(()=>{
   typing.style.display="none";
-  showMessage("m1", 0);
-  showMessage("m2", rand(1500,2000));
-  showMessage("m3", rand(3000,4000));
+  showMessage("m1",0);
+  showMessage("m2",rand(1500,2000));
+  showMessage("m3",rand(3000,4000));
 },2000);
 
 // ===== SHOW BUTTON =====
