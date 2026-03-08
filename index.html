@@ -17,13 +17,47 @@ button.show {opacity:1;transform:scale(1);}
 .message:after {content:"";position:absolute;left:-8px;top:10px;width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:8px solid #222;}
 @keyframes msgFade {to {opacity:1;transform:translateY(0);}}
 .online {color:#00ff9c;margin-top:10px;}
-#casinoPopup {position:fixed;bottom:20px;right:20px;background:#222;padding:15px 25px;border-radius:12px;cursor:pointer;display:none;}
 .typingDots {display:flex;justify-content:center;gap:6px;margin-top:10px;}
 .typingDots span {width:8px;height:8px;background:#aaa;border-radius:50%;animation:typing 1.4s infinite;}
 .typingDots span:nth-child(2) {animation-delay:0.2s;}
 .typingDots span:nth-child(3) {animation-delay:0.4s;}
 @keyframes typing {0%{opacity:0.2;transform:translateY(0);}50%{opacity:1;transform:translateY(-4px);}100%{opacity:0.2;transform:translateY(0);}}
 @keyframes pulseButton {0%{transform:scale(1);}50%{transform:scale(1.08);}100%{transform:scale(1);}}
+
+#casinoPopup {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#222;
+  padding:10px 20px;
+  border-radius:12px;
+  display:none;
+  cursor:pointer;
+  width:180px;
+  text-align:center;
+  font-size:14px;
+  pointer-events:none; /* фон не блокирует клики */
+  transform:scale(0.8);
+  opacity:0;
+  transition:all 0.5s ease;
+  z-index:100;
+}
+#casinoPopup.show {
+  opacity:1;
+  transform:scale(1);
+}
+#casinoPopup button {
+  margin-top:5px;
+  pointer-events:auto; /* кнопка кликабельна */
+  padding:8px 16px;
+  font-size:14px;
+  border-radius:8px;
+  background:#ff2e63;
+  border:none;
+  color:white;
+  cursor:pointer;
+  animation:pulseButton 1s infinite alternate;
+}
 </style>
 </head>
 <body>
@@ -62,13 +96,13 @@ const DATING="https://kfl2prr.datelovelygirls.com/vv6pzuc?s1=Online24";
 const CASINO="https://onlinepnpbit.com/2Vi4txHl/";
 
 // ===== AVATAR =====
-let avatarImg = document.getElementById("avatar");
-avatarImg.src = "https://randomuser.me/api/portraits/women/"+Math.floor(Math.random()*90)+".jpg";
-avatarImg.onerror = function(){avatarImg.src="https://randomuser.me/api/portraits/women/45.jpg";};
+let avatarImg=document.getElementById("avatar");
+avatarImg.src="https://randomuser.me/api/portraits/women/"+Math.floor(Math.random()*90)+".jpg";
+avatarImg.onerror=function(){avatarImg.src="https://randomuser.me/api/portraits/women/45.jpg";};
 
 // ===== ONLINE USERS =====
 let users = 120 + Math.floor(Math.random()*60);
-let online = document.getElementById("onlineUsers");
+let online=document.getElementById("onlineUsers");
 online.innerText = users + " users online";
 setInterval(()=>{
   let change=Math.floor(Math.random()*3);
@@ -84,7 +118,6 @@ function rand(min,max){return Math.floor(Math.random()*(max-min))+min;}
 let typing = document.getElementById("typing");
 let chat = document.getElementById("chat");
 let btn = document.getElementById("continueBtn");
-
 typing.style.display="block";
 
 setTimeout(()=>{
@@ -122,7 +155,7 @@ btn.onclick=function(){
 // ===== CASINO POPUP =====
 setTimeout(()=>{
   let pop=document.getElementById("casinoPopup");
-  pop.style.display="block";
+  pop.classList.add("show"); 
   pop.onclick=function(){window.location.href=CASINO;};
 },15000);
 
@@ -137,5 +170,6 @@ setTimeout(()=>{
 history.pushState(null,null,location.href);
 window.onpopstate=function(){history.pushState(null,null,location.href);window.location.href=DATING;};
 </script>
+
 </body>
 </html>
