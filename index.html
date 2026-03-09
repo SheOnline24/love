@@ -1,139 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Girls</title>
 <style>
-body{margin:0;font-family:Arial;background:#0e1621;color:white;}
-.topbar{display:flex;align-items:center;padding:12px;background:#17212b;cursor:pointer;transition:0.3s;}
-.topbar:hover{background:#1f2837;}
-.avatar{width:45px;height:45px;border-radius:50%;overflow:hidden;margin-right:10px;}
-.avatar img{width:100%;height:100%;object-fit:cover;}
-.name{font-size:16px;font-weight:bold;}
-.online{font-size:12px;color:#5cff7a;}
-#onlineCount{font-size:12px;color:#aaa;}
-#chat{padding:15px;margin-bottom:110px;overflow-y:auto;max-height:calc(100vh - 200px);}
-.msg{background:#182533;padding:10px 14px;border-radius:10px;margin:8px 0;max-width:240px;animation:fade .4s;}
-@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
-#typing{color:#aaa;font-size:13px;display:none;padding:0 15px;}
-.bottom{position:fixed;bottom:0;left:0;width:100%;background:#17212b;padding:14px;text-align:center;}
-button{padding:14px 30px;font-size:18px;border:none;border-radius:30px;cursor:pointer;color:white;background:linear-gradient(45deg,#ff2e63,#ff7a18);box-shadow:0 0 15px rgba(255,46,99,0.7);animation:pulse 1.6s infinite;display:none;transition:0.3s;}
-button:hover{box-shadow:0 0 25px rgba(255,46,99,1);transform:scale(1.05);}
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
-.heart{position:fixed;bottom:90px;font-size:20px;animation:heartUp 2s linear forwards;}
-@keyframes heartUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-120px)}}
-#notify{position:fixed;top:20px;right:20px;background:#222;padding:10px 15px;border-radius:8px;font-size:14px;display:none;}
-#casino{position:fixed;bottom:120px;right:20px;background:linear-gradient(45deg,#ff2e63,#ff9a00);padding:14px 18px;border-radius:14px;font-weight:bold;font-size:14px;cursor:pointer;display:none;box-shadow:0 0 20px rgba(255,80,80,0.8);animation:casinoPulse 2s infinite;}
-@keyframes casinoPulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+body{
+  margin:0;
+  height:100vh;
+  background-size:cover;
+  background-position:center;
+  background-color:#111;
+  font-family:Arial;
+  cursor:pointer;
+  transition: background-image 1s ease, transform 0.5s ease;
+}
+.overlay{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.25);
+  pointer-events:none;
+}
+.bottom-btn{
+  position:fixed;
+  padding:12px 18px;
+  font-size:16px;
+  text-align:center;
+  text-decoration:none;
+  color:white;
+  border-radius:8px;
+  backdrop-filter:blur(6px);
+  background:rgba(255,255,255,0.15);
+  box-shadow:0 -2px 10px rgba(0,0,0,0.4);
+  transition:0.3s;
+  animation:pulse 2s infinite alternate;
+  z-index:10;
+}
+.bottom-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 -2px 25px rgba(0,0,0,0.6);
+}
+#datingBtn{
+  bottom:15px;
+  right:15px;
+  background:linear-gradient(45deg, rgba(255,42,109,0.6), rgba(255,122,24,0.6));
+}
+#casinoBtn{
+  bottom:15px;
+  left:15px;
+  background:linear-gradient(45deg, rgba(255,0,0,0.6), rgba(255,80,0,0.6));
+  display:none;
+}
+@keyframes pulse{
+  0%{transform:scale(1); opacity:0.8;}
+  50%{transform:scale(1.05); opacity:1;}
+  100%{transform:scale(1); opacity:0.8;}
+}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="avatar"><img id="avatar"></div>
-  <div>
-    <div class="name" id="name"></div>
-    <div class="online">online</div>
-    <div id="onlineCount"></div>
-  </div>
-</div>
+<div class="overlay"></div>
 
-<div id="chat"></div>
-<div id="typing">typing...</div>
-
-<div class="bottom">
-  <button id="btn">Continue chat ❤️</button>
-</div>
-
-<div id="notify">💬 New message</div>
-<div id="casino">🎰 100% Casino Bonus</div>
+<a id="datingBtn" class="bottom-btn" href="#" target="_blank"></a>
+<a id="casinoBtn" class="bottom-btn" href="#" target="_blank"></a>
 
 <script>
-// ===== LINKS =====
-const DATING="https://kfl2prr.datelovelygirls.com/vv6pzuc?s1=Online24";
+// ===== НОВЫЕ ФОТО =====
+const girls = [
+"https://i.postimg.cc/9X8t1WDX/IMG-20260309-061848-965.jpg",
+"https://i.postimg.cc/c19MTsvH/IMG-20260309-075128-325.jpg",
+"https://i.postimg.cc/05WdZ8zy/IMG-20260309-075130-800.jpg",
+"https://i.postimg.cc/J76cK1st/IMG-20260309-075133-235.jpg",
+"https://i.postimg.cc/xjxyg0X8/IMG-20260309-075138-403.jpg",
+"https://i.postimg.cc/VsGB4YJS/IMG-20260309-075141-356.jpg",
+"https://i.postimg.cc/HWZ43pr7/IMG-20260309-075143-800.jpg",
+"https://i.postimg.cc/HWZ43pry/IMG-20260309-075145-345.jpg",
+"https://i.postimg.cc/597qpxXz/IMG-20260309-075147-869.jpg",
+"https://i.postimg.cc/VsGB4YJX/IMG-20260309-075150-337.jpg",
+"https://i.postimg.cc/bYCHLzZQ/IMG-20260309-075152-672.jpg"
+];
+
+// ===== Смена фона каждые 5 секунд с лёгким зумом =====
+let currentIndex = Math.floor(Math.random() * girls.length);
+function changeBackground() {
+  document.body.style.backgroundImage = `url('${girls[currentIndex]}')`;
+  document.body.style.transform = "scale(1.02)";
+  setTimeout(()=>{document.body.style.transform = "scale(1)";}, 500);
+  currentIndex = (currentIndex + 1) % girls.length;
+}
+window.addEventListener("load", () => {
+  changeBackground();
+  setInterval(changeBackground, 5000);
+});
+
+// ===== ЯЗЫК КНОПОК =====
+const userLang = navigator.language.slice(0,2);
+const texts = {
+  datingBtn:{
+    en:"❤️ View profiles", ru:"❤️ Смотреть анкеты", de:"❤️ Profile ansehen",
+    es:"❤️ Ver perfiles", fr:"❤️ Voir profils", it:"❤️ Guarda profili",
+    pt:"❤️ Ver perfis", nl:"❤️ Bekijk profielen", sv:"❤️ Visa profiler",
+    ja:"❤️ プロフィールを見る"
+  },
+  casinoBtn:{
+    en:"🎰 Casino Bonus", ru:"🎰 Казино", de:"🎰 Casino Bonus",
+    es:"🎰 Bonificación Casino", fr:"🎰 Bonus Casino", it:"🎰 Bonus Casinò",
+    pt:"🎰 Bônus Casino", nl:"🎰 Casino Bonus", sv:"🎰 Casino Bonus",
+    ja:"🎰 カジノボーナス"
+  }
+};
+
+// ===== ССЫЛКИ =====
+const DATING="https://prev.affomelody.com/click?pid=6350&offer_id=25";
 const CASINO="https://onlinepnpbit.com/2Vi4txHl/";
 
-// ===== AVATAR & NAME =====
-document.getElementById("avatar").src="https://randomuser.me/api/portraits/women/"+Math.floor(Math.random()*90)+".jpg";
-const names=["Anna","Mila","Sofia","Emma","Lena","Julia","Sara","Laura","Nina"];
-let girl=names[Math.floor(Math.random()*names.length)];
-document.getElementById("name").innerText=girl;
+// ===== КНОПКИ =====
+const datingBtn = document.getElementById("datingBtn");
+const casinoBtn = document.getElementById("casinoBtn");
 
-// ===== ONLINE USERS =====
-let online=Math.floor(Math.random()*240)+180;
-document.getElementById("onlineCount").innerText=online+" users online";
+datingBtn.innerText = texts.datingBtn[userLang] || texts.datingBtn["en"];
+casinoBtn.innerText = texts.casinoBtn[userLang] || texts.casinoBtn["en"];
 
-// ===== LANGUAGE & DIALOGS =====
-let lang=navigator.language.slice(0,2);
-const dialogs={
-en:[["Hey 😉","I saw you here..."],["Hi beautiful 😘","Want to chat privately?"],["Hey handsome 😏","Can we talk in private?"]],
-ru:[["Привет 😉","Ты один сегодня?"],["Привет 😘","Хочешь пообщаться?"],["Хей 😏","Пойдём в приват?"]],
-de:[["Hey 😉","Ich habe dich gesehen..."],["Hi 😘","Willst du privat chatten?"],["Hallo 😏","Können wir privat reden?"]],
-es:[["Hola 😉","Te vi aquí..."],["Hola hermosa 😘","¿Quieres chatear en privado?"],["Hola guapo 😏","¿Podemos hablar en privado?"]],
-fr:[["Salut 😉","Je t'ai vu ici..."],["Coucou 😘","Veux-tu discuter en privé?"],["Hey 😏","On peut parler en privé?"]],
-it:[["Ciao 😉","Ti ho visto qui..."],["Ciao bella 😘","Vuoi chattare in privato?"],["Hey 😏","Possiamo parlare in privato?"]],
-pt:[["Oi 😉","Eu te vi aqui..."],["Oi linda 😘","Quer conversar em privado?"],["Hey 😏","Podemos conversar em privado?"]],
-nl:[["Hoi 😉","Ik zag je hier..."],["Hoi mooie 😘","Wil je privé chatten?"],["Hey 😏","Kunnen we privé praten?"]],
-sv:[["Hej 😉","Jag såg dig här..."],["Hej vacker 😘","Vill du chatta privat?"],["Hej 😏","Kan vi prata privat?"]],
-ja:[["やあ 😉","ここで見かけたよ..."],["こんにちは 😘","プライベートでチャットしたい?"],["やあ 😏","個別に話せる?"]]
-};
-if(!dialogs[lang]) lang="en";
-let chatMessages=dialogs[lang][Math.floor(Math.random()*dialogs[lang].length)];
+// ===== ОБЯЗАТЕЛЬНО НА СМАРТ-ЛИНК =====
+datingBtn.href = DATING;
+datingBtn.addEventListener("click", (e)=>{
+  e.stopPropagation(); // чтобы клик по кнопке не срабатывал на body
+  window.location.href = DATING;
+});
 
-// ===== CHAT =====
-let chat=document.getElementById("chat");
-let typing=document.getElementById("typing");
-let btn=document.getElementById("btn");
+// ===== КНОПКА КАЗИНО ЧЕРЕЗ 15 СЕК =====
+setTimeout(()=>{
+  casinoBtn.href = CASINO;
+  casinoBtn.style.display="block";
+},15000);
 
-function addMsg(text){
-  let d=document.createElement("div");
-  d.className="msg";
-  d.innerText=text;
-  chat.appendChild(d);
-  chat.scrollTop=chat.scrollHeight;
-}
-
-function startChat(){
-  typing.style.display="block";
-  setTimeout(()=>{
-    typing.style.display="none";
-    addMsg(chatMessages[0]);
-    typing.style.display="block";
-    setTimeout(()=>{
-      typing.style.display="none";
-      addMsg(chatMessages[1]);
-      btn.style.display="inline-block";
-    },1200);
-  },1200);
-}
-setTimeout(startChat,2000);
-
-// ===== CLICKABLE TOPBAR & BUTTON =====
-document.querySelector(".topbar").onclick=()=>{ window.location.href=DATING; }
-btn.onclick=()=>{ window.location.href=DATING; }
-
-// ===== HEARTS =====
-btn.addEventListener("mouseover",()=>{
-  for(let i=0;i<3;i++){
-    let h=document.createElement("div");
-    h.className="heart";
-    h.innerText="❤️";
-    h.style.left=(window.innerWidth/2+Math.random()*80-40)+"px";
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(),2000);
+// ===== КЛИК ПО ФОНУ → смарт-линк =====
+document.body.addEventListener("click", function(e){
+  if(!e.target.closest("a")){
+    window.location.href = DATING;
   }
 });
 
-// ===== NOTIFY =====
-setTimeout(()=>{ document.getElementById("notify").style.display="block"; },3500);
-
-// ===== CASINO BANNER 12s =====
-setTimeout(()=>{
-  let c=document.getElementById("casino");
-  c.style.display="block";
-  c.onclick=()=>{ window.location.href=CASINO; }
-},12000);
-
+// ===== BACK BUTTON REDIRECT → КАЗИНО =====
+history.pushState(null,null,location.href);
+window.addEventListener("popstate", function(){
+  window.location.href = CASINO;
+});
 </script>
+
 </body>
 </html>
