@@ -4,237 +4,253 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Find Someone Tonight</title>
-
 <style>
 body{
   margin:0;
   font-family:Arial;
   height:100vh;
   overflow:hidden;
-  cursor:pointer;
-  background:#0e1621 center/cover no-repeat;
+  background:#0e1621;
   display:flex;
   flex-direction:column;
   justify-content:flex-end;
   align-items:center;
   padding-bottom:20px;
+  cursor:pointer;
 }
 
 /* фон */
-#bgLayer{
+.bgLayer{
   position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
+  top:0; left:0;
+  width:100%; height:100%;
   background:center/cover no-repeat;
-
+  transition:opacity 1s ease, transform 4s linear;
+  z-index:-1;
   opacity:0;
   transform:scale(1.12);
-  transition:opacity 0.8s ease, transform 4s linear;
-  z-index:-1;
 }
+.bgLayer.active{opacity:1;transform:scale(1);}
 
-/* кнопки */
+/* кнопки контейнер */
 .button-container{
   display:flex;
   width:90%;
   max-width:600px;
   gap:20px;
-  margin-bottom:10px;
-  z-index:10;
+  z-index:999;
 }
-
-.button-left,.button-right{
+.button-left, .button-right, .casino-btn{
   flex:1;
-  padding:14px 0;
+  padding:14px;
   border-radius:30px;
   font-size:18px;
   font-weight:bold;
-  color:white;
+  color:#fff;
   border:none;
-  animation:flash 1.5s infinite;
-  transition:transform 0.3s ease;
-}
-
-.button-left{background:linear-gradient(45deg,#00c6ff,#0072ff);}
-.button-right{background:linear-gradient(45deg,#ff2e63,#ff7a18);}
-
-@keyframes flash{
-  0%,50%,100%{opacity:1}
-  25%,75%{opacity:.65}
-}
-
-.button-left:active,
-.button-right:active{
-  transform:scale(0.95);
-}
-
-/* баннер */
-#casinoBanner{
-  position:fixed;
-  bottom:100px;
-  left:50%;
-  transform:translate(-50%,30px);
-  padding:15px 25px;
-  background:linear-gradient(45deg,#ffd700,#ffb700);
-  color:#000;
-  font-size:20px;
-  font-weight:bold;
-  border-radius:25px;
   cursor:pointer;
-
-  opacity:0;
-  visibility:hidden;
-
-  transition:all 0.6s ease;
-
-  animation:bannerGlow 2s infinite;
-  animation-play-state:paused;
-
-  max-width:90%;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  z-index:50;
+  backdrop-filter:blur(10px);
+  transition: transform 0.2s ease, background 0.3s ease;
+  user-select:none;
+  text-align:center;
+  text-shadow:1px 1px 2px #000;
 }
+.button-left { background: linear-gradient(45deg, rgba(0,198,255,0.3), rgba(0,114,255,0.3)); }
+.button-right { background: linear-gradient(45deg, rgba(255,46,99,0.3), rgba(255,122,24,0.3)); animation: meetPulse 1.2s infinite alternate;}
+.casino-btn{
+  background: rgba(255,215,0,0.25);
+  color:#fff;
+  opacity:0;
+  pointer-events:none;
+}
+@keyframes meetPulse {0%{transform:scale(1);}100%{transform:scale(1.08);}}
+.button-left:hover, .button-right:hover, .casino-btn:hover {transform: scale(1.05);}
+.button-left:active, .button-right:active, .casino-btn:active {transform: scale(0.95);}
 
-@keyframes bannerGlow{
-  0%,100%{opacity:1}
-  50%{opacity:.85}
+/* MODAL */
+#exitModal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  visibility:hidden;
+  opacity:0;
+  transition:0.3s;
+  z-index:999;
+}
+#exitModal.active{visibility:visible;opacity:1;}
+.modal-box{
+  background:#111;
+  padding:20px;
+  border-radius:15px;
+  text-align:center;
+  max-width:300px;
+}
+.modal-box h3{color:#fff;margin-bottom:10px;text-shadow:1px 1px 2px #000;}
+.modal-btn{
+  margin-top:10px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:20px;
+  font-weight:bold;
+  cursor:pointer;
+  transition: transform 0.2s ease;
+  text-shadow:1px 1px 2px #000;
+}
+.modal-btn:active{ transform: scale(0.95); }
+.tg-btn{background:#0088cc;color:#fff;}
+.stay-btn{background:#444;color:#fff;}
+
+/* мобильная адаптация */
+@media (max-width: 400px){
+  .button-container{gap:10px;}
+  .button-left,.button-right,.casino-btn{font-size:16px;padding:10px;border-radius:20px;}
 }
 </style>
 </head>
-
 <body>
 
-<div id="bgLayer"></div>
+<div id="bgLayer1" class="bgLayer"></div>
+<div id="bgLayer2" class="bgLayer"></div>
 
-<div class="button-container">
-  <button class="button-left" id="chatBtn">Secret Chat</button>
-  <button class="button-right" id="meetBtn">Meet Her Now</button>
+<!-- Казино кнопка -->
+<div class="button-container" style="margin-bottom:10px;">
+  <button class="casino-btn" id="casinoBanner"></button>
 </div>
 
-<div id="casinoBanner">🎁 Получи бонус!</div>
+<!-- Основные кнопки -->
+<div class="button-container">
+  <button class="button-left" id="chatBtn">💬 Telegram</button>
+  <button class="button-right" id="meetBtn">❤️ Meet Now</button>
+</div>
+
+<div id="exitModal">
+  <div class="modal-box">
+    <h3></h3>
+    <p style="color:#ccc;font-size:14px;"></p>
+    <button class="modal-btn tg-btn" id="goTG"></button>
+    <button class="modal-btn stay-btn" id="stay"></button>
+  </div>
+</div>
 
 <script>
-const casinoOffer="https://onlinepnpbit.com/2Vi4txHl/";
 const telegramChat="https://t.me/+NFHjJC5nOndlZjky";
 const smartLink="https://prev.affomelody.com/click?pid=6350&offer_id=25";
+const casinoOffer="https://onlinepnpbit.com/2Vi4txHl/";
 
-/* 66 фото */
-const bgPhotos=[];
-for(let i=1;i<=66;i++){
-  bgPhotos.push(`https://SheOnline24.github.io/tender/photos/FindGirl${i}.jpg`);
-}
+const bgLayer1=document.getElementById("bgLayer1");
+const bgLayer2=document.getElementById("bgLayer2");
+const chatBtn=document.getElementById("chatBtn");
+const meetBtn=document.getElementById("meetBtn");
+const goTG=document.getElementById("goTG");
+const stay=document.getElementById("stay");
+const casinoBanner=document.getElementById("casinoBanner");
+const modal = document.getElementById("exitModal"); 
 
-/* предзагрузка */
-bgPhotos.forEach(src=>{
-  const img=new Image();
-  img.src=src;
-});
-
-/* фон */
-const bgLayer=document.getElementById("bgLayer");
-let currentIndex=0;
-
-/* сразу первый кадр */
-bgLayer.style.backgroundImage=`url('${bgPhotos[0]}')`;
-bgLayer.style.opacity=1;
-
-/* смена фона с лёгким параллакс-zoom */
-function changeBackground(){
-  let next;
-  do{ next=Math.floor(Math.random()*bgPhotos.length); } while(next===currentIndex);
-
-  const img=new Image();
-  img.src=bgPhotos[next];
-  img.onload=()=>{
-    bgLayer.style.transition="none";
-    bgLayer.style.opacity=0;
-    bgLayer.style.transform="scale(1.12)";
-    bgLayer.style.backgroundImage=`url('${bgPhotos[next]}')`;
-
-    setTimeout(()=>{
-      bgLayer.style.transition="opacity 0.8s ease, transform 4s linear";
-      bgLayer.style.opacity=1;
-      bgLayer.style.transform="scale(1)";
-    },50);
-
-    currentIndex=next;
-  };
-}
-
-/* смена каждые 3.5 сек + небольшая случайная задержка для “живости” */
-setInterval(()=>{
-  setTimeout(changeBackground, Math.random()*400);
-},3500);
-
-/* кнопки */
-chatBtn.onclick=e=>{e.stopPropagation();location.href=telegramChat;}
-meetBtn.onclick=e=>{e.stopPropagation();location.href=smartLink;}
-
-/* основной клик */
-document.body.onclick=(e)=>{
-  if(!e.target.closest("#casinoBanner")){
-    location.href=smartLink;
+/* ------------------ мультиязычные тексты ------------------ */
+const translations = {
+  modalTitle: { ru:"Уже уходишь?", en:"Leaving already?", de:"Schon weg?", fr:"Vous partez déjà?", es:"¿Ya te vas?" },
+  modalText:  { ru:"Тебя ждут в Telegram 👇", en:"Telegram is waiting for you 👇", de:"Telegram wartet auf dich 👇", fr:"Telegram vous attend 👇", es:"Telegram te espera 👇" },
+  modalGo:    { ru:"Перейти в Telegram", en:"Go to Telegram", de:"Zu Telegram", fr:"Aller sur Telegram", es:"Ir a Telegram" },
+  modalStay:  { ru:"Остаться", en:"Stay", de:"Bleiben", fr:"Rester", es:"Quedarse" },
+  casinoPhrases: {
+    ru:["🎰 Spin & Win!","🎉 Супер бонус!"],
+    en:["🎰 Spin & Win!","🎉 Super Bonus!"],
+    de:["🎰 Spin & Win!","🎉 Super Bonus!"],
+    fr:["🎰 Spin & Win!","🎉 Super Bonus!"],
+    es:["🎰 Spin & Win!","🎉 Super Bonus!"]
   }
 };
 
-/* микро-триггер кнопки */
-function pulseButton(){
-  const btn=document.querySelector(".button-right");
-  btn.style.transform="scale(1.08)";
-  setTimeout(()=>{btn.style.transform="scale(1)";},350);
-}
+/* ------------------ определение языка через IP + fallback ------------------ */
+async function detectLang() {
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+    const countryCode = data.country_code ? data.country_code.toLowerCase() : null;
+    const browserLang = (navigator.language || navigator.userLanguage).split('-')[0];
 
-/* цикличная пульсация каждые 6 сек */
-setInterval(pulseButton,6000);
-
-/* гео-текст */
-async function setText(){
-  let country="RU";
-  try{
-    const r=await fetch("https://ipapi.co/json/");
-    const d=await r.json();
-    country=d.country_code;
-  }catch{}
-
-  const banner=document.getElementById("casinoBanner");
-  banner.textContent = (country==="RU") ? "🎁 Получи бонус!" : "🎁 Claim your bonus!";
-  adjustFont();
-}
-
-function adjustFont(){
-  const el=document.getElementById("casinoBanner");
-  let size=20;
-  el.style.fontSize=size+"px";
-  while(el.scrollWidth>el.clientWidth && size>12){
-    size--;
-    el.style.fontSize=size+"px";
+    const geoLangMap = { "de":"de", "fr":"fr", "es":"es", "us":"en", "gb":"en", "ru":"ru" };
+    let lang = geoLangMap[countryCode] || browserLang || "en";
+    if(!["ru","en","de","fr","es"].includes(lang)) lang="en";
+    return lang;
+  } catch(e){
+    return "en";
   }
 }
 
-setText();
+/* ------------------ фон с 66 фото без повторов ------------------ */
+const photos=[];
+for(let i=1;i<=66;i++){
+  const url=`https://SheOnline24.github.io/tender/photos/FindGirl${i}.jpg`;
+  photos.push(url);
+  new Image().src=url;
+}
+let active=0;
+function startBg(){
+  let order = [...Array(photos.length).keys()];
+  function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
+  shuffle(order);
+  let currentIndex=0;
+  bgLayer1.style.backgroundImage = `url('${photos[order[0]]}')`;
+  bgLayer1.classList.add("active");
+  setInterval(()=>{
+    currentIndex++;
+    if(currentIndex>=order.length){ shuffle(order); currentIndex=0; }
+    const nextIndex = order[currentIndex];
+    const inactive = 1-active;
+    [bgLayer1,bgLayer2][inactive].style.backgroundImage = `url('${photos[nextIndex]}')`;
+    [bgLayer1,bgLayer2][active].classList.remove("active");
+    [bgLayer1,bgLayer2][inactive].classList.add("active");
+    active = inactive;
+  },4000);
+}
+startBg();
 
-/* баннер */
-const banner=document.getElementById("casinoBanner");
-setTimeout(()=>{
-  banner.style.visibility="visible";
-  banner.style.opacity=1;
-  banner.style.transform="translate(-50%,0)";
-  setTimeout(()=>{banner.style.animationPlayState="running";},500);
+/* ------------------ кнопки ------------------ */
+chatBtn.onclick=e=>{e.stopPropagation();window.location.href=telegramChat;};
+meetBtn.onclick=e=>{e.stopPropagation();window.location.href=smartLink;};
+document.body.addEventListener('click',e=>{
+  if(!e.target.closest('.button-container') && e.target !== casinoBanner) window.location.href=smartLink;
+});
 
-  banner.onclick=(e)=>{
-    e.stopPropagation();
-    location.href=casinoOffer;
-  };
-},6000); // чуть раньше для захвата внимания
+/* ------------------ инициализация мультиязыка + казино баннер ------------------ */
+detectLang().then(lang=>{
+  document.querySelector("#exitModal h3").textContent = translations.modalTitle[lang];
+  document.querySelector("#exitModal p").textContent = translations.modalText[lang];
+  document.querySelector("#goTG").textContent = translations.modalGo[lang];
+  document.querySelector("#stay").textContent = translations.modalStay[lang];
 
-/* редирект на уход с вкладки */
-function goTelegram(){location.href=telegramChat;}
-document.addEventListener("visibilitychange",()=>{if(document.hidden)setTimeout(goTelegram,1500);});
-window.addEventListener("blur",()=>setTimeout(goTelegram,1200));
+  let idx=0;
+  let phrases = translations.casinoPhrases[lang];
+
+  setTimeout(()=>{
+    casinoBanner.style.opacity=1;
+    casinoBanner.style.pointerEvents="auto";
+
+    // ---- надёжный клик, не ломается при смене текста ----
+    casinoBanner.addEventListener('click',()=> window.location.href = casinoOffer);
+
+    casinoBanner.textContent = phrases[idx];
+    setInterval(()=>{
+      idx=(idx+1)%phrases.length;
+      casinoBanner.textContent = phrases[idx];
+    },3000);
+  },5000);
+});
+
+/* ------------------ exit modal ------------------ */
+let modalShown=false;
+function showExitModal(){ if(modalShown) return; modalShown=true; modal.classList.add("active"); }
+history.pushState({},"",location.href);
+window.addEventListener("popstate",()=>{ showExitModal(); setTimeout(()=>history.pushState({},"",location.href),100); });
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") showExitModal(); });
+goTG.onclick=()=>window.location.href=telegramChat;
+stay.onclick=()=>modal.classList.remove("active");
+modal.addEventListener("click",e=>{ if(e.target===modal) modal.classList.remove("active"); });
 </script>
 
 </body>
